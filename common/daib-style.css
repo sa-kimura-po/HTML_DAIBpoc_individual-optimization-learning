@@ -64,9 +64,9 @@ body {
 
 .daib-main {
   width: 100%;
-  height: auto;
+  min-height: 100vh;
   display: flex;
-  overflow: hidden;
+  overflow: visible;
   align-items: flex-start;
   flex-shrink: 0;
   background-color: var(--daib-surface);
@@ -234,9 +234,9 @@ body {
 /* メインコンテンツエリア */
 .daib-content {
   flex: 1;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
-  overflow: hidden;
+  overflow: visible;
   align-self: stretch;
   align-items: flex-start;
   flex-direction: column;
@@ -270,10 +270,11 @@ body {
 .daib-learning-content {
   flex: 1;
   padding: 24px;
-  overflow-y: auto;
+  overflow-y: visible;
   background: var(--daib-background);
   width: 100%;
   min-width: 0; /* flexboxのオーバーフロー防止 */
+  min-height: auto;
 }
 
 /* チャットエリア（既存機能） */
