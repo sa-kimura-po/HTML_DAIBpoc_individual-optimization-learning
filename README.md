@@ -1,0 +1,2 @@
+# HTML_DAIBpoc_individual-optimization-learning
+DAIBWeb版に個別最適化学習を反映したHTML。学生画面と教員画面が存在。
