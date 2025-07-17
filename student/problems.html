@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個別問題 - 個別最適化学習システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="common/student-style.css">
+</head>
+<body class="bg-gray-50">
+    <div id="app" class="min-h-screen">
+        <!-- ナビゲーション -->
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <a href="dashboard.html" class="text-xl font-bold text-gray-800">個別最適化学習システム</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-600">学生</span>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-user-circle text-gray-600"></i>
+                            <span id="username" class="text-gray-800 font-medium"></span>
+                        </div>
+                        <button onclick="logout()" class="text-gray-600 hover:text-gray-800">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ローディング画面 -->
+        <div id="loading-screen" class="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                <p class="text-gray-600">個別問題を生成中...</p>
+            </div>
+        </div>
+
+        <!-- 問題なし画面 -->
+        <div id="no-problems-screen" class="hidden min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+                <i class="fas fa-exclamation-triangle text-yellow-500 text-5xl mb-4"></i>
+                <h2 class="text-xl font-bold text-gray-800 mb-2">問題がありません</h2>
+                <p class="text-gray-600 mb-6">
+                    現在利用可能な問題がありません。<br />
+                    先に理解度アンケートを提出してください。
+                </p>
+                <a href="survey.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                    理解度アンケートに戻る
+                </a>
+            </div>
+        </div>
+
+        <!-- 完了画面 -->
+        <div id="completed-screen" class="hidden min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+                <i class="fas fa-check-circle text-green-500 text-6xl mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">お疲れ様でした！</h2>
+                <p class="text-gray-600 mb-6">
+                    データサイエンス基礎第7回の個別問題をすべて完了しました！<br />
+                    AI採点エージェントが自動採点し、結果を通知します。
+                </p>
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-2">完了した問題</h3>
+                    <div id="completed-problems-list" class="space-y-2">
+                        <!-- 完了問題一覧はJavaScriptで生成 -->
+                    </div>
+                </div>
+                <a href="results.html" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">
+                    採点結果を確認
+                </a>
+            </div>
+        </div>
+
+        <!-- メイン問題画面 -->
+        <main id="main-screen" class="hidden max-w-4xl mx-auto px-4 py-8">
+            <!-- プログレス -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h1 class="text-2xl font-bold text-gray-800">個別問題</h1>
+                    <div class="flex items-center space-x-4 text-sm text-gray-600">
+                        <div class="flex items-center">
+                            <i class="fas fa-clock mr-1"></i>
+                            <span id="timer">0:00</span>
+                        </div>
+                        <div>
+                            問題 <span id="current-problem-num">1</span> / <span id="total-problems">5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- プログレスバー -->
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                
+                <div class="flex justify-between text-xs text-gray-500 mt-2">
+                    <span>完了: <span id="completed-count">0</span></span>
+                    <span>残り: <span id="remaining-count">5</span></span>
+                </div>
+            </div>
+
+            <!-- 現在の問題 -->
+            <div id="current-problem" class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <!-- 問題内容はJavaScriptで動的に生成 -->
+            </div>
+        </main>
+    </div>
+
+    <script src="../common/data.js"></script>
+    <script src="common/student-nav.js"></script>
+    <script>
+        let problems = [];
+        let currentProblemIndex = 0;
+        let answers = {};
+        let submittedProblems = new Set();
+        let startTime = null;
+        let timeSpent = 0;
+        let timer = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStudentData();
+            loadProblems();
+        });
+
+        function loadStudentData() {
+            const student = LocalStorage.getCurrentUser();
+            document.getElementById('username').textContent = student.name;
+        }
+
+        async function loadProblems() {
+            try {
+                console.log('個別問題生成開始 - デモモード');
+                
+                // デモ用遅延
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // 拡張された問題データ（穴埋め・選択・計算の3種類）
+                const generatedProblems = [
+                    {
+                        id: 1,
+                        title: '2×2分割表の指標計算（計算問題）',
+                        type: 'calculation',
+                        difficulty: '標準',
+                        keywords: ['2×2分割表の指標'],
+                        description: '以下の2×2分割表から、感度、特異度、精度を計算してください。',
+                        content: `
+                            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                <table class="w-full border-collapse border border-gray-400">
+                                    <tr>
+                                        <td class="border border-gray-400 p-2 font-bold">検査結果</td>
+                                        <td class="border border-gray-400 p-2 font-bold">病気あり</td>
+                                        <td class="border border-gray-400 p-2 font-bold">病気なし</td>
+                                        <td class="border border-gray-400 p-2 font-bold">合計</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-gray-400 p-2 font-bold">陽性</td>
+                                        <td class="border border-gray-400 p-2 text-center">85</td>
+                                        <td class="border border-gray-400 p-2 text-center">15</td>
+                                        <td class="border border-gray-400 p-2 text-center">100</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-gray-400 p-2 font-bold">陰性</td>
+                                        <td class="border border-gray-400 p-2 text-center">10</td>
+                                        <td class="border border-gray-400 p-2 text-center">90</td>
+                                        <td class="border border-gray-400 p-2 text-center">100</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-gray-400 p-2 font-bold">合計</td>
+                                        <td class="border border-gray-400 p-2 text-center">95</td>
+                                        <td class="border border-gray-400 p-2 text-center">105</td>
+                                        <td class="border border-gray-400 p-2 text-center">200</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">計算過程を含めて詳しく説明してください。</p>
+                        `,
+                        inputType: 'textarea'
+                    },
+                    {
+                        id: 2,
+                        title: 'リスク比の定義（選択問題）',
+                        type: 'choice',
+                        difficulty: '基礎',
+                        keywords: ['リスク差・リスク比・オッズ比'],
+                        description: 'リスク比の正しい定義を選択してください。',
+                        content: `
+                            <p class="mb-4">リスク比（相対リスク）の定義として正しいものを選んでください。</p>
+                        `,
+                        inputType: 'radio',
+                        options: [
+                            '暴露群のリスク - 非暴露群のリスク',
+                            '暴露群のリスク ÷ 非暴露群のリスク',
+                            '(暴露群のオッズ) ÷ (非暴露群のオッズ)',
+                            '(暴露群のリスク) × (非暴露群のリスク)'
+                        ]
+                    },
+                    {
+                        id: 3,
+                        title: '混同行列の用語（穴埋め問題）',
+                        type: 'fill',
+                        difficulty: '基礎',
+                        keywords: ['混同行列とは'],
+                        description: '混同行列に関する説明文の空欄を埋めてください。',
+                        content: `
+                            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                <p class="mb-2">混同行列は、分類問題における予測結果を評価するための表です。</p>
+                                <p class="mb-2">真の値が正例で、予測も正例の場合を【<input type="text" class="fill-blank border-b-2 border-blue-500 bg-transparent px-2 py-1 w-20" data-blank="1">】といいます。</p>
+                                <p class="mb-2">真の値が負例で、予測も負例の場合を【<input type="text" class="fill-blank border-b-2 border-blue-500 bg-transparent px-2 py-1 w-20" data-blank="2">】といいます。</p>
+                                <p class="mb-2">真の値が正例で、予測が負例の場合を【<input type="text" class="fill-blank border-b-2 border-blue-500 bg-transparent px-2 py-1 w-20" data-blank="3">】といいます。</p>
+                                <p>真の値が負例で、予測が正例の場合を【<input type="text" class="fill-blank border-b-2 border-blue-500 bg-transparent px-2 py-1 w-20" data-blank="4">】といいます。</p>
+                            </div>
+                        `,
+                        inputType: 'fill'
+                    },
+                    {
+                        id: 4,
+                        title: '単回帰分析の実行（計算問題）',
+                        type: 'calculation',
+                        difficulty: '応用',
+                        keywords: ['単回帰モデルとは', '最小二乗法による回帰係数の推定'],
+                        description: '与えられたデータから最小二乗法を用いて回帰係数を求めてください。',
+                        content: `
+                            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                <p class="mb-2">以下のデータを使って単回帰モデル y = ax + b を構築してください。</p>
+                                <p class="mb-2">X: [1, 2, 3, 4, 5]</p>
+                                <p class="mb-2">Y: [2.1, 3.9, 6.2, 7.8, 10.1]</p>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">最小二乗法の公式を使って、回帰係数aと切片bを求め、計算過程を示してください。</p>
+                        `,
+                        inputType: 'textarea'
+                    },
+                    {
+                        id: 5,
+                        title: '決定係数の解釈（選択問題）',
+                        type: 'choice',
+                        difficulty: '標準',
+                        keywords: ['決定係数の解釈'],
+                        description: '決定係数R²=0.75の意味として最も適切なものを選択してください。',
+                        content: `
+                            <p class="mb-4">決定係数R²=0.75が示す意味として、最も適切なものを選んでください。</p>
+                        `,
+                        inputType: 'radio',
+                        options: [
+                            '予測値の75%が正確である',
+                            '全体の変動の75%が回帰モデルで説明できる',
+                            '相関係数が0.75である',
+                            '誤差の25%が説明できる'
+                        ]
+                    }
+                ];
+                
+                problems = generatedProblems;
+                console.log('個別問題5問を生成完了');
+                
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('main-screen').classList.remove('hidden');
+                
+                updateUI();
+                startTimer();
+                displayCurrentProblem();
+                
+            } catch (error) {
+                console.error('問題生成エラー:', error);
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('no-problems-screen').classList.remove('hidden');
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('current-problem-num').textContent = currentProblemIndex + 1;
+            document.getElementById('total-problems').textContent = problems.length;
+            document.getElementById('completed-count').textContent = submittedProblems.size;
+            document.getElementById('remaining-count').textContent = problems.length - submittedProblems.size;
+            
+            const progressPercent = (submittedProblems.size / problems.length) * 100;
+            document.getElementById('progress-bar').style.width = progressPercent + '%';
+        }
+
+        function startTimer() {
+            startTime = new Date();
+            timer = setInterval(() => {
+                timeSpent = Math.floor((Date.now() - startTime.getTime()) / 1000);
+                document.getElementById('timer').textContent = formatTime(timeSpent);
+            }, 1000);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function displayCurrentProblem() {
+            const problem = problems[currentProblemIndex];
+            const container = document.getElementById('current-problem');
+            const isSubmitted = submittedProblems.has(problem.id);
+            
+            container.innerHTML = `
+                <!-- 問題ヘッダー -->
+                <div class="bg-blue-600 text-white p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold">${problem.title}</h2>
+                            <div class="flex items-center mt-2 space-x-3">
+                                <span class="px-3 py-1 rounded-full text-xs bg-white/20">
+                                    ${problem.difficulty}
+                                </span>
+                                <span class="px-3 py-1 rounded-full text-xs bg-white/20">
+                                    ${problem.type === 'calculation' ? '計算問題' : 
+                                      problem.type === 'choice' ? '選択問題' : '穴埋め問題'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 問題内容 -->
+                <div class="p-6">
+                    <div class="mb-6">
+                        <h3 class="font-semibold text-gray-800 mb-3">問題文</h3>
+                        <div class="bg-gray-50 rounded-lg p-4 text-gray-700">
+                            <p class="mb-4">${problem.description}</p>
+                            ${problem.content}
+                        </div>
+                    </div>
+
+                    <!-- 関連キーワード -->
+                    <div class="mb-6">
+                        <h3 class="font-semibold text-gray-800 mb-2 flex items-center">
+                            <i class="fas fa-tags mr-1"></i>
+                            関連キーワード
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            ${problem.keywords.map(keyword => `
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">${keyword}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- 回答入力 -->
+                    <div class="mb-6">
+                        <h3 class="font-semibold text-gray-800 mb-3">あなたの回答</h3>
+                        ${generateAnswerInput(problem)}
+                    </div>
+
+                    <!-- 提出ボタン -->
+                    <div class="flex justify-between">
+                        <div class="text-sm text-gray-500">
+                            ${isSubmitted ? `
+                                <div class="flex items-center text-green-600">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    提出済み
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <button
+                            onclick="submitProblem(${problem.id})"
+                            ${isSubmitted ? 'disabled' : ''}
+                            class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center"
+                        >
+                            ${isSubmitted ? '提出済み' : '回答を提出'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateAnswerInput(problem) {
+            const currentAnswer = answers[problem.id] || '';
+            const isSubmitted = submittedProblems.has(problem.id);
+            
+            switch (problem.inputType) {
+                case 'textarea':
+                    return `<textarea
+                        id="answer-${problem.id}"
+                        rows="6"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="こちらに回答を記入してください。計算過程や考え方も含めて詳しく説明してください。"
+                        ${isSubmitted ? 'disabled' : ''}
+                        onchange="updateAnswer(${problem.id}, this.value)"
+                    >${currentAnswer}</textarea>`;
+                
+                case 'radio':
+                    return `<div class="space-y-3">
+                        ${problem.options.map((option, index) => `
+                            <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 ${isSubmitted ? 'opacity-50' : ''}">
+                                <input
+                                    type="radio"
+                                    name="answer-${problem.id}"
+                                    value="${index}"
+                                    ${currentAnswer == index ? 'checked' : ''}
+                                    ${isSubmitted ? 'disabled' : ''}
+                                    onchange="updateAnswer(${problem.id}, '${index}')"
+                                    class="text-blue-600"
+                                />
+                                <span class="text-gray-700">${option}</span>
+                            </label>
+                        `).join('')}
+                    </div>`;
+                
+                case 'fill':
+                    // 穴埋め問題の場合、入力フィールドは問題文に含まれている
+                    return `<div class="text-sm text-gray-600">
+                        上記の空欄をすべて埋めてください。
+                    </div>`;
+                
+                default:
+                    return '';
+            }
+        }
+
+        function updateAnswer(problemId, value) {
+            answers[problemId] = value;
+        }
+
+        async function submitProblem(problemId) {
+            const problem = problems.find(p => p.id === problemId);
+            let answer = '';
+            
+            if (problem.inputType === 'fill') {
+                // 穴埋め問題の場合、すべての空欄を取得
+                const fillInputs = document.querySelectorAll('.fill-blank');
+                const fillAnswers = {};
+                fillInputs.forEach(input => {
+                    fillAnswers[input.dataset.blank] = input.value;
+                });
+                answer = JSON.stringify(fillAnswers);
+            } else {
+                answer = answers[problemId];
+            }
+            
+            if (!answer || answer.trim() === '') {
+                alert('回答を入力してください。');
+                return;
+            }
+            
+            try {
+                console.log(`問題${problemId}を提出: ${answer}`);
+                
+                // デモ用遅延
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                submittedProblems.add(problemId);
+                
+                // 結果をローカルストレージに保存
+                const results = LocalStorage.getProblemResults();
+                results[problemId] = {
+                    problem: problem,
+                    answer: answer,
+                    submitted_at: new Date().toISOString(),
+                    time_spent: timeSpent
+                };
+                LocalStorage.setProblemResults(results);
+                
+                // 次の問題に移動
+                moveToNextProblem();
+                
+            } catch (error) {
+                console.error('提出エラー:', error);
+                alert('提出中にエラーが発生しました。');
+            }
+        }
+
+        function moveToNextProblem() {
+            // 未提出の問題を探す
+            let nextIndex = -1;
+            for (let i = 0; i < problems.length; i++) {
+                if (!submittedProblems.has(problems[i].id)) {
+                    nextIndex = i;
+                    break;
+                }
+            }
+            
+            if (nextIndex !== -1) {
+                currentProblemIndex = nextIndex;
+                updateUI();
+                displayCurrentProblem();
+                
+                // タイマーリセット
+                startTime = new Date();
+                timeSpent = 0;
+            } else {
+                // すべて完了
+                showCompletionScreen();
+            }
+        }
+
+        function showCompletionScreen() {
+            clearInterval(timer);
+            
+            const completedList = document.getElementById('completed-problems-list');
+            completedList.innerHTML = problems.map(problem => `
+                <div class="flex items-center justify-between text-sm">
+                    <span>${problem.title}</span>
+                    <span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                        ${problem.difficulty}
+                    </span>
+                </div>
+            `).join('');
+            
+            document.getElementById('main-screen').classList.add('hidden');
+            document.getElementById('completed-screen').classList.remove('hidden');
+        }
+
+        function logout() {
+            if (confirm('ログアウトしますか？')) {
+                window.location.href = '../common/auth.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>理解度アンケート - 個別最適化学習システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="common/student-style.css">
+</head>
+<body class="bg-gray-50">
+    <div id="app" class="min-h-screen">
+        <!-- ナビゲーション -->
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <a href="dashboard.html" class="text-xl font-bold text-gray-800">個別最適化学習システム</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-600">学生</span>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-user-circle text-gray-600"></i>
+                            <span id="username" class="text-gray-800 font-medium"></span>
+                        </div>
+                        <button onclick="logout()" class="text-gray-600 hover:text-gray-800">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- メインコンテンツ -->
+        <main class="max-w-4xl mx-auto px-4 py-8">
+            <!-- ヘッダー -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">理解度アンケート</h1>
+                        <div class="flex items-center space-x-4 mt-2 text-gray-600">
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-book-open"></i>
+                                <span>第7回: データサイエンス基礎</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-clock"></i>
+                                <span>第7週</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- エラー表示 -->
+            <div id="error-message" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-exclamation-circle text-red-600"></i>
+                    <span class="text-red-800"></span>
+                </div>
+            </div>
+
+            <!-- 理解度評価 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">理解度評価</h2>
+                <p class="text-gray-600 mb-6">今回の講義で扱ったキーワードについて、理解度を5段階で評価してください。</p>
+
+                <div id="keywords-container" class="space-y-8">
+                    <!-- キーワード項目はJavaScriptで動的に生成 -->
+                </div>
+            </div>
+
+            <!-- 追加情報 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">追加情報</h2>
+                <div class="space-y-6">
+                    <!-- 学習時間 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            今回の予習・復習時間（分）
+                        </label>
+                        <select id="study-time" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="0">0分</option>
+                            <option value="30">30分</option>
+                            <option value="60" selected>60分</option>
+                            <option value="90">90分</option>
+                            <option value="120">120分</option>
+                            <option value="180">180分以上</option>
+                        </select>
+                    </div>
+
+                    <!-- 自由記述 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            感想・質問・要望（任意）
+                        </label>
+                        <textarea id="free-text" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="今回の講義について感じたことや質問があれば自由にお書きください..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 送信ボタン -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-600">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-check-circle text-green-600"></i>
+                            <span>アンケート送信後、あなた専用の問題が生成されます</span>
+                        </div>
+                    </div>
+                    
+                    <button id="submit-btn" onclick="submitSurvey()" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-save"></i>
+                        <span>アンケートを送信</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../common/data.js"></script>
+    <script src="common/student-nav.js"></script>
+    <script>
+        let keywordUnderstandings = {};
+        let submitting = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStudentData();
+            generateKeywordSurvey();
+        });
+
+        function loadStudentData() {
+            const student = LocalStorage.getCurrentUser();
+            document.getElementById('username').textContent = student.name;
+        }
+
+        function generateKeywordSurvey() {
+            const container = document.getElementById('keywords-container');
+            
+            LECTURE_DATA.keywords.forEach((keyword, index) => {
+                const keywordDiv = document.createElement('div');
+                keywordDiv.className = 'border border-gray-200 rounded-lg p-6';
+                keywordDiv.innerHTML = `
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">${index + 1}. ${keyword}</h3>
+                        </div>
+                        <div class="text-sm text-gray-500">必須</div>
+                    </div>
+                    <div class="grid grid-cols-5 gap-2" id="keyword-${index}">
+                        ${generateUnderstandingButtons(index)}
+                    </div>
+                `;
+                container.appendChild(keywordDiv);
+            });
+        }
+
+        function generateUnderstandingButtons(keywordIndex) {
+            return UNDERSTANDING_LEVELS.map((level, levelIndex) => `
+                <button 
+                    onclick="selectUnderstanding(${keywordIndex}, ${level.value})" 
+                    class="understanding-btn p-3 text-xs border-2 rounded-lg transition-all bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                    data-keyword="${keywordIndex}" 
+                    data-level="${level.value}"
+                >
+                    <div class="flex flex-col items-center space-y-1">
+                        <i class="fas fa-star opacity-30"></i>
+                        <span>${level.value}</span>
+                    </div>
+                    <div class="mt-1 text-xs leading-tight">${level.label}</div>
+                </button>
+            `).join('');
+        }
+
+        function selectUnderstanding(keywordIndex, level) {
+            keywordUnderstandings[keywordIndex] = level;
+            
+            // すべてのボタンをリセット
+            const buttons = document.querySelectorAll(`#keyword-${keywordIndex} .understanding-btn`);
+            buttons.forEach(btn => {
+                btn.className = 'understanding-btn p-3 text-xs border-2 rounded-lg transition-all bg-white text-gray-600 border-gray-200 hover:border-gray-300';
+                btn.querySelector('i').className = 'fas fa-star opacity-30';
+            });
+            
+            // 選択されたボタンをハイライト
+            const selectedBtn = document.querySelector(`#keyword-${keywordIndex} .understanding-btn[data-level="${level}"]`);
+            const levelData = UNDERSTANDING_LEVELS.find(l => l.value === level);
+            selectedBtn.className = `understanding-btn p-3 text-xs border-2 rounded-lg transition-all ${levelData.color} border-2`;
+            selectedBtn.querySelector('i').className = 'fas fa-star';
+        }
+
+        function validateForm() {
+            const keywordCount = LECTURE_DATA.keywords.length;
+            
+            for (let i = 0; i < keywordCount; i++) {
+                if (!keywordUnderstandings[i]) {
+                    showError(`「${LECTURE_DATA.keywords[i]}」の理解度を選択してください`);
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.querySelector('span').textContent = message;
+            errorDiv.classList.remove('hidden');
+            
+            // 3秒後に自動で非表示
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+            }, 3000);
+        }
+
+        async function submitSurvey() {
+            if (submitting) return;
+            
+            if (!validateForm()) {
+                return;
+            }
+            
+            submitting = true;
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>送信中...</span>';
+            
+            try {
+                console.log('理解度アンケート送信開始 - デモモード');
+                
+                // 回答データを準備
+                const surveyData = {
+                    lecture_id: LECTURE_DATA.lecture_id,
+                    keywords: LECTURE_DATA.keywords.map((keyword, index) => ({
+                        keyword: keyword,
+                        understanding: keywordUnderstandings[index]
+                    })),
+                    study_time: parseInt(document.getElementById('study-time').value),
+                    free_text: document.getElementById('free-text').value,
+                    submitted_at: new Date().toISOString()
+                };
+                
+                // ローカルストレージに保存
+                LocalStorage.setSurveyResponses(surveyData);
+                
+                // デモ用の遅延
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                console.log('アンケート送信完了 - 問題画面に遷移');
+                
+                // 問題画面に遷移
+                window.location.href = 'problems.html';
+                
+            } catch (error) {
+                console.error('Survey submission failed:', error);
+                showError('アンケートの送信中にエラーが発生しました');
+                
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save"></i><span>アンケートを送信</span>';
+            } finally {
+                submitting = false;
+            }
+        }
+
+        function logout() {
+            if (confirm('ログアウトしますか？')) {
+                window.location.href = '../common/auth.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,828 @@
+/* DAIB統合版 個別最適化学習システム スタイル */
+
+:root {
+  /* DAIB基本カラー（同志社ロイヤル・パープル） */
+  --daib-primary: #663399;
+  --daib-primary-dark: #4d2673;
+  --daib-primary-light: #8066b3;
+  --daib-background: #FBFAF9;
+  --daib-surface: #FFFFFF;
+  --daib-sidebar: #D9D9D9;
+  --daib-text: #191818;
+  --daib-text-light: #666666;
+  --daib-border: #E0E0E0;
+  --daib-success: #059669;
+  --daib-warning: #d97706;
+  --daib-error: #dc2626;
+  --daib-info: #0284c7;
+  
+  /* レイアウト */
+  --daib-sidebar-width: 230px;
+  --daib-header-height: 50px;
+  --dl-layout-space-unit: 16px;
+  --dl-layout-space-halfunit: 8px;
+  --dl-layout-space-twounits: 32px;
+  --dl-layout-space-oneandhalfunits: 24px;
+}
+
+/* 基本リセット */
+html {
+  line-height: 1.15;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  font-weight: 400;
+  font-style: normal;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.15;
+  color: var(--daib-text);
+  background: var(--daib-background);
+  overflow: auto;
+}
+
+* {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* DAIB基本レイアウト */
+.daib-container {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+}
+
+.daib-main {
+  width: 100%;
+  height: auto;
+  display: flex;
+  overflow: hidden;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-color: var(--daib-surface);
+}
+
+/* 左サイドバー */
+.daib-sidebar {
+  height: 100vh;
+  width: var(--daib-sidebar-width);
+  display: flex;
+  overflow: hidden;
+  align-self: stretch;
+  align-items: center;
+  flex-shrink: 0;
+  flex-direction: column;
+  background-color: var(--daib-sidebar);
+}
+
+.daib-sidebar-header {
+  display: flex;
+  overflow: hidden;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+  background-color: var(--daib-surface);
+}
+
+/* DAIBヘッダー */
+.daib-header {
+  gap: 10px;
+  height: var(--daib-header-height);
+  display: flex;
+  padding: 15px 99px;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: center;
+  background-color: var(--daib-primary);
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.daib-header a {
+  color: white;
+  text-decoration: none;
+}
+
+/* 科目選択 */
+.daib-subject-selector {
+  padding: var(--dl-layout-space-unit);
+  border-bottom: 1px solid var(--daib-border);
+}
+
+.daib-subject-selector select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--daib-border);
+  border-radius: 4px;
+  background: var(--daib-surface);
+  font-size: 14px;
+}
+
+/* ナビゲーションセクション */
+.daib-nav-section {
+  border-bottom: 1px solid var(--daib-border);
+}
+
+.daib-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  background: var(--daib-surface);
+  border-bottom: 1px solid var(--daib-border);
+  transition: all 0.2s ease;
+}
+
+.daib-nav-header:hover {
+  background: var(--daib-background);
+}
+
+.daib-nav-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--daib-text);
+}
+
+.daib-nav-toggle {
+  font-size: 12px;
+  color: var(--daib-text-light);
+  transition: transform 0.2s ease;
+}
+
+.daib-nav-toggle.expanded {
+  transform: rotate(180deg);
+}
+
+.daib-nav-content {
+  padding: 8px 16px 16px 16px;
+  background: var(--daib-background);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.daib-nav-content.expanded {
+  max-height: 500px;
+}
+
+.nav-item {
+  display: block;
+  padding: 8px 12px;
+  margin: 4px 0;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--daib-text);
+  font-size: 14px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.nav-item:hover {
+  background-color: var(--daib-primary-light);
+  color: white;
+}
+
+.nav-item.active {
+  background-color: var(--daib-primary);
+  color: white;
+  font-weight: 600;
+}
+
+.nav-item i {
+  margin-right: 8px;
+  width: 16px;
+}
+
+/* チャット機能領域 */
+.daib-chat-section {
+  padding: var(--dl-layout-space-unit);
+}
+
+.daib-new-chat {
+  display: flex;
+  padding: 12px;
+  margin-bottom: 16px;
+  background: var(--daib-surface);
+  border: 1px solid var(--daib-border);
+  border-radius: 6px;
+  text-align: center;
+  color: var(--daib-text);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.daib-new-chat:hover {
+  background: var(--daib-primary-light);
+  color: white;
+}
+
+/* メインコンテンツエリア */
+.daib-content {
+  flex: 1;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+  min-width: 0; /* flexboxのオーバーフロー防止 */
+}
+
+.daib-content-header {
+  display: flex;
+  overflow: hidden;
+  align-self: stretch;
+  align-items: flex-start;
+  background-color: var(--daib-surface);
+  border-bottom: 1px solid var(--daib-border);
+  padding: 16px 24px;
+}
+
+.daib-content-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--daib-text);
+  margin: 0;
+}
+
+.daib-content-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+}
+
+/* 学習コンテンツエリア */
+.daib-learning-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--daib-background);
+  width: 100%;
+  min-width: 0; /* flexboxのオーバーフロー防止 */
+}
+
+/* チャットエリア（既存機能） */
+.daib-chat-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  background: var(--daib-surface);
+}
+
+.daib-chat-messages {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.daib-chat-input {
+  padding: 16px 24px;
+  border-top: 1px solid var(--daib-border);
+}
+
+/* 統計カード */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--daib-surface);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--daib-border);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 16px rgba(102, 51, 153, 0.15);
+  transform: translateY(-2px);
+}
+
+.stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.stat-card-title {
+  font-size: 14px;
+  color: var(--daib-text-light);
+  margin: 0;
+}
+
+.stat-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--daib-primary);
+  margin: 8px 0;
+}
+
+.stat-card-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--daib-primary);
+}
+
+/* コンテンツカード */
+.content-card {
+  background: var(--daib-surface);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--daib-border);
+}
+
+.content-card h2 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--daib-text);
+}
+
+.content-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--daib-text);
+}
+
+/* ボタン */
+.daib-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.daib-btn-primary {
+  background: var(--daib-primary);
+  color: white;
+}
+
+.daib-btn-primary:hover {
+  background: var(--daib-primary-dark);
+}
+
+.daib-btn-secondary {
+  background: transparent;
+  color: var(--daib-primary);
+  border-color: var(--daib-primary);
+}
+
+.daib-btn-secondary:hover {
+  background: var(--daib-primary);
+  color: white;
+}
+
+.daib-btn-success {
+  background: var(--daib-success);
+  color: white;
+}
+
+.daib-btn-warning {
+  background: var(--daib-warning);
+  color: white;
+}
+
+/* フォーム要素 */
+.daib-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--daib-border);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--daib-surface);
+  transition: border-color 0.2s ease;
+}
+
+.daib-input:focus {
+  outline: none;
+  border-color: var(--daib-primary);
+  box-shadow: 0 0 0 3px rgba(102, 51, 153, 0.1);
+}
+
+.daib-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* 理解度評価ボタン */
+.understanding-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.understanding-btn {
+  padding: 12px 8px;
+  border: 2px solid var(--daib-border);
+  border-radius: 8px;
+  background: var(--daib-surface);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+}
+
+.understanding-btn:hover {
+  border-color: var(--daib-primary);
+  transform: translateY(-2px);
+}
+
+.understanding-btn.selected {
+  background: var(--daib-primary);
+  border-color: var(--daib-primary);
+  color: white;
+}
+
+.understanding-btn .icon {
+  font-size: 16px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.understanding-btn .level {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.understanding-btn .label {
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+/* プログレスバー */
+.progress-container {
+  width: 100%;
+  height: 8px;
+  background: var(--daib-border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--daib-primary), var(--daib-primary-light));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 通知 */
+.notification {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border-left: 4px solid;
+  background: var(--daib-background);
+}
+
+.notification.info {
+  border-color: var(--daib-info);
+  background: rgba(2, 132, 199, 0.05);
+}
+
+.notification.success {
+  border-color: var(--daib-success);
+  background: rgba(5, 150, 105, 0.05);
+}
+
+.notification.warning {
+  border-color: var(--daib-warning);
+  background: rgba(217, 119, 6, 0.05);
+}
+
+.notification.error {
+  border-color: var(--daib-error);
+  background: rgba(220, 38, 38, 0.05);
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .daib-sidebar {
+    width: 200px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .understanding-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .content-card {
+    padding: 16px;
+  }
+  
+  .daib-learning-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .daib-sidebar {
+    width: 180px;
+  }
+  
+  .understanding-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .understanding-btn {
+    padding: 8px;
+    font-size: 11px;
+  }
+}
+
+/* メニュー切り替えボタン */
+.menu-toggle-buttons {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+
+.menu-toggle-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--daib-border);
+  border-radius: 6px;
+  background: var(--daib-background);
+  color: var(--daib-text);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.menu-toggle-btn:hover {
+  background: var(--daib-primary-light);
+  color: white;
+}
+
+.menu-toggle-btn.active {
+  background: var(--daib-primary);
+  color: white;
+  border-color: var(--daib-primary);
+}
+
+/* メニューコンテンツ */
+.menu-content {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+}
+
+.menu-content.active {
+  display: flex;
+}
+
+/* 通知ドット */
+.notification-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background: var(--daib-warning);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ナビゲーションアイテムの相対位置 */
+.nav-item {
+  position: relative;
+}
+
+/* 学習プロセス表示 */
+.learning-process {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.process-step {
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.process-nav {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  text-decoration: none;
+  color: var(--daib-text);
+  background: var(--daib-surface);
+  border: 1px solid var(--daib-border);
+  transition: all 0.3s ease;
+}
+
+.process-nav:hover {
+  background: var(--daib-background);
+  color: var(--daib-text);
+}
+
+.step-number {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--daib-border);
+  color: var(--daib-text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 12px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.step-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.step-status {
+  font-size: 10px;
+  color: var(--daib-text-light);
+  background: var(--daib-background);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+  transition: all 0.3s ease;
+}
+
+/* プロセス状態別スタイル */
+.process-step.waiting .step-number {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+.process-step.waiting .step-status {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+/* 進行中項目の文字を緑にする */
+.process-step.waiting .step-status.processing-text {
+  color: var(--daib-success);
+  background: rgba(5, 150, 105, 0.1);
+  font-weight: 600;
+}
+
+.process-step.active .process-nav {
+  background: var(--daib-primary);
+  color: white;
+  border-color: var(--daib-primary);
+}
+
+.process-step.active .step-number {
+  background: white;
+  color: var(--daib-primary);
+}
+
+.process-step.active .step-status {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.process-step.completed .process-nav {
+  background: var(--daib-success);
+  color: white;
+  border-color: var(--daib-success);
+}
+
+.process-step.completed .step-number {
+  background: white;
+  color: var(--daib-success);
+}
+
+.process-step.completed .step-status {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.process-step.processing .process-nav {
+  background: var(--daib-warning);
+  color: white;
+  border-color: var(--daib-warning);
+}
+
+.process-step.processing .step-number {
+  background: white;
+  color: var(--daib-warning);
+}
+
+.process-step.processing .step-status {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* プロセス遷移状態 */
+.process-transition {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  font-size: 12px;
+  color: var(--daib-text-light);
+  gap: 6px;
+}
+
+.process-transition i {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ユーティリティクラス */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+.p-1 { padding: 8px; }
+.p-2 { padding: 16px; }
+.p-3 { padding: 24px; }
+.hidden { display: none !important; }
+.flex { display: flex; }
+.flex-1 { flex: 1; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-2 { gap: 16px; }
+.gap-3 { gap: 24px; }

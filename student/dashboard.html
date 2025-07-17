@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAIB - 個別最適化学習システム</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../common/daib-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="daib-container">
+        <div class="daib-main">
+            <!-- 左サイドバー -->
+            <div class="daib-sidebar">
+                <!-- DAIBヘッダー -->
+                <div class="daib-sidebar-header">
+                    <div class="daib-header">
+                        <a href="dashboard.html">DAIB</a>
+                    </div>
+                </div>
+
+                <!-- メニュー切り替えボタン -->
+                <div class="daib-nav-section">
+                    <div style="background: var(--daib-surface); padding: 8px; border-bottom: 1px solid var(--daib-border);">
+                        <div class="menu-toggle-buttons">
+                            <button id="daib-learning-toggle" class="menu-toggle-btn" onclick="toggleMenuMode('learning')">
+                                DAIB学習
+                            </button>
+                            <button id="learning-review-toggle" class="menu-toggle-btn active" onclick="toggleMenuMode('review')">
+                                学習振り返り
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DAIB学習メニュー -->
+                <div id="daib-learning-menu" class="menu-content">
+                    <!-- DAIB学習セクション -->
+                    <div class="daib-nav-section">
+                        <div class="daib-nav-content" style="display: block; max-height: none; padding: 8px 16px 16px 16px; background: var(--daib-sidebar);">
+                            <a href="#" class="nav-item" data-mode="chat" data-type="chat" onclick="DAIB_STATE.setMode('chat', 'general')">
+                                <i class="fas fa-comments"></i>
+                                DAIBチャット
+                            </a>
+                            <a href="#" class="nav-item" data-mode="chat" data-type="subject" onclick="DAIB_STATE.setMode('chat', 'data-science')">
+                                <i class="fas fa-chart-bar"></i>
+                                データサイエンス基礎
+                            </a>
+                            <a href="#" class="nav-item" data-mode="chat" data-type="subject" onclick="DAIB_STATE.setMode('chat', 'data-overview')">
+                                <i class="fas fa-database"></i>
+                                データサイエンス概論
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 新しいチャットボタンセクション -->
+                    <div class="daib-nav-section">
+                        <div style="background: var(--daib-sidebar); border-bottom: 1px solid var(--daib-border); padding: 16px;">
+                            <div class="daib-new-chat" onclick="startNewChat()">
+                                <i class="fas fa-plus" style="margin-right: 8px;"></i>
+                                新しく会話を始める
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 履歴セクション -->
+                    <div class="daib-nav-section" style="flex: 1; display: flex; flex-direction: column;">
+                        <div class="daib-nav-header" style="background: var(--daib-sidebar); border-bottom: 1px solid var(--daib-border);">
+                            <h3 style="font-weight: bold;">履歴</h3>
+                        </div>
+                        <div class="daib-nav-content" style="display: block; max-height: none; padding: 8px 16px 16px 16px; background: var(--daib-sidebar); flex: 1; overflow-y: auto;">
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="padding: 8px 12px; background: var(--daib-surface); border-radius: 6px; border: 1px solid var(--daib-border); cursor: pointer;">
+                                    <div style="font-size: 14px; font-weight: 500; margin-bottom: 4px;">5/1 共分散</div>
+                                    <div style="display: flex; gap: 4px;">
+                                        <i class="fas fa-thumbs-up" style="color: #059669; font-size: 12px;"></i>
+                                        <i class="fas fa-thumbs-down" style="color: #dc2626; font-size: 12px;"></i>
+                                    </div>
+                                </div>
+                                <div style="padding: 8px 12px; background: var(--daib-surface); border-radius: 6px; border: 1px solid var(--daib-border); cursor: pointer;">
+                                    <div style="font-size: 14px; font-weight: 500; margin-bottom: 4px;">5/3 相関係数</div>
+                                    <div style="display: flex; gap: 4px;">
+                                        <i class="fas fa-thumbs-up" style="color: #059669; font-size: 12px;"></i>
+                                        <i class="fas fa-thumbs-down" style="color: #dc2626; font-size: 12px;"></i>
+                                    </div>
+                                </div>
+                                <div style="padding: 8px 12px; background: var(--daib-surface); border-radius: 6px; border: 1px solid var(--daib-border); cursor: pointer;">
+                                    <div style="font-size: 14px; font-weight: 500; margin-bottom: 4px;">大学の施設について</div>
+                                    <div style="display: flex; gap: 4px;">
+                                        <i class="fas fa-thumbs-up" style="color: #059669; font-size: 12px;"></i>
+                                        <i class="fas fa-thumbs-down" style="color: #dc2626; font-size: 12px;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 学習振り返りメニュー -->
+                <div id="learning-review-menu" class="menu-content active">
+                    <!-- 学習振り返りセクション -->
+                    <div class="daib-nav-section" style="flex: 1; display: flex; flex-direction: column;">
+                        <div class="daib-nav-content" style="display: block; max-height: none; padding: 8px 16px 16px 16px; background: var(--daib-sidebar); flex: 1;">
+                            <a href="#" class="nav-item active" data-page="dashboard" onclick="DAIB_STATE.setLearningPage('dashboard')">
+                                <i class="fas fa-chart-line"></i>
+                                ダッシュボード
+                                <span id="dashboard-notification" class="notification-dot" style="display: none;"></span>
+                            </a>
+                            
+                            <!-- 段階的プロセス表示 -->
+                            <div class="learning-process">
+                                <!-- ステップ1: 理解度アンケート -->
+                                <div class="process-step" id="survey-step">
+                                    <div class="step-connector"></div>
+                                    <a href="#" class="nav-item process-nav" data-page="survey" onclick="DAIB_STATE.setLearningPage('survey')">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            理解度アンケート
+                                        </div>
+                                        <div class="step-status" id="survey-status">待機中</div>
+                                    </a>
+                                </div>
+                                
+                                <!-- ステップ間の処理状態表示 -->
+                                <div class="process-transition" id="survey-to-problems">
+                                    <div class="transition-line"></div>
+                                    <div class="transition-status">
+                                        <i class="fas fa-cog fa-spin" style="display: none;"></i>
+                                        <span class="transition-text">問題生成中...</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- ステップ2: 個別問題 -->
+                                <div class="process-step" id="problems-step">
+                                    <div class="step-connector"></div>
+                                    <a href="#" class="nav-item process-nav" data-page="problems" onclick="DAIB_STATE.setLearningPage('problems')">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            個別問題
+                                        </div>
+                                        <div class="step-status" id="problems-status">未完了</div>
+                                    </a>
+                                </div>
+                                
+                                <!-- ステップ間の処理状態表示 -->
+                                <div class="process-transition" id="problems-to-results">
+                                    <div class="transition-line"></div>
+                                    <div class="transition-status">
+                                        <i class="fas fa-cog fa-spin" style="display: none;"></i>
+                                        <span class="transition-text">採点中...</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- ステップ3: 採点結果 -->
+                                <div class="process-step" id="results-step">
+                                    <div class="step-connector"></div>
+                                    <a href="#" class="nav-item process-nav" data-page="results" onclick="DAIB_STATE.setLearningPage('results')">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            採点結果
+                                        </div>
+                                        <div class="step-status" id="results-status">未完了</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- メインコンテンツエリア -->
+            <div class="daib-content">
+                <!-- コンテンツヘッダー -->
+                <div class="daib-content-header">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <h1 class="daib-content-title" id="content-title">学習ダッシュボード</h1>
+                        <!-- 授業選択プルダウン（学習振り返りの時のみ表示） -->
+                        <div id="subject-selector" style="display: block;">
+                            <label style="font-size: 12px; color: #666; margin-right: 8px;">授業選択:</label>
+                            <select id="subject-select" class="daib-input" style="width: 200px; font-size: 14px;" onchange="changeSubject()">
+                                <option value="data-science">データサイエンス基礎</option>
+                                <option value="data-overview">データサイエンス概論</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="daib-content-actions">
+                        <span style="font-size: 14px; color: #666;">
+                            ようこそ、<span id="student-name">山田太郎</span>さん
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 学習コンテンツ -->
+                <div class="daib-learning-content" id="learning-area">
+                    <!-- ダッシュボードコンテンツ -->
+                    <div id="dashboard-content">
+                        <!-- 通知・目標・ヒントセクション -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                            <!-- 通知 -->
+                            <div class="content-card">
+                                <h3 style="margin: 0 0 16px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-bell" style="margin-right: 8px;"></i>
+                                    通知
+                                </h3>
+                                <div id="notifications">
+                                    <!-- 通知はJavaScriptで動的に生成 -->
+                                </div>
+                            </div>
+
+                            <!-- 学習のヒント -->
+                            <div class="content-card" style="background: linear-gradient(135deg, #f0f9f5, #e6f3ff); border: 1px solid #10b981;">
+                                <h3 style="margin: 0 0 12px 0; color: #047857;">💡 学習のヒント</h3>
+                                <div style="font-size: 14px; color: #047857; line-height: 1.5;">
+                                    <p style="margin: 0 0 8px 0;">• 2×2分割表の指標の理解度を向上させましょう</p>
+                                    <p style="margin: 0 0 8px 0;">• 回帰分析の基礎概念を復習しましょう</p>
+                                    <p style="margin: 0;">• 混同行列の計算練習をお勧めします</p>
+                                </div>
+                            </div>
+
+                            <!-- 今週の目標 -->
+                            <div class="content-card">
+                                <h3 style="margin: 0 0 16px 0;">今週の目標</h3>
+                                <div style="font-size: 14px;">
+                                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                        <i class="fas fa-check-circle" style="color: var(--daib-success); margin-right: 8px;"></i>
+                                        <span style="text-decoration: line-through; color: #666;">第7回理解度アンケート提出</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                        <div style="width: 16px; height: 16px; border: 2px solid #ddd; border-radius: 3px; margin-right: 8px;"></div>
+                                        <span>キーワードベース問題5問完了</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center;">
+                                        <div style="width: 16px; height: 16px; border: 2px solid #ddd; border-radius: 3px; margin-right: 8px;"></div>
+                                        <span>理解度向上 (目標4.0)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 統計カード -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <h3 class="stat-card-title">総合理解度</h3>
+                                    <i class="fas fa-chart-line stat-card-icon"></i>
+                                </div>
+                                <div class="stat-card-value" id="overall-understanding">3.2</div>
+                                <div style="font-size: 12px; color: #059669;">+0.3 先週比</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <h3 class="stat-card-title">アンケート提出</h3>
+                                    <i class="fas fa-clipboard-check stat-card-icon"></i>
+                                </div>
+                                <div class="stat-card-value">
+                                    <span id="completed-surveys">6</span>/<span id="total-surveys">7</span>
+                                </div>
+                                <div style="font-size: 12px; color: #666;">87.5% 完了</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <h3 class="stat-card-title">未解答問題</h3>
+                                    <i class="fas fa-exclamation-triangle stat-card-icon" style="color: #d97706;"></i>
+                                </div>
+                                <div class="stat-card-value" style="color: #d97706;" id="pending-problems">5</div>
+                                <div style="font-size: 12px; color: #d97706;">要対応</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <h3 class="stat-card-title">最新スコア</h3>
+                                    <i class="fas fa-star stat-card-icon" style="color: #7c3aed;"></i>
+                                </div>
+                                <div class="stat-card-value" style="color: #7c3aed;" id="latest-score">78</div>
+                                <div style="font-size: 12px; color: #059669;">+10点 前回比</div>
+                            </div>
+                        </div>
+
+                        <!-- 今週の講義 -->
+                        <div class="content-card">
+                            <h2>今週の講義</h2>
+                            <div style="background: linear-gradient(135deg, var(--daib-primary), var(--daib-primary-light)); 
+                                        border-radius: 12px; padding: 24px; color: white; margin-bottom: 16px;">
+                                <div class="flex justify-between items-center mb-2">
+                                    <div>
+                                        <h3 style="color: white; margin: 0 0 8px 0;">第7回: データサイエンス基礎</h3>
+                                        <p style="margin: 0; opacity: 0.9; font-size: 14px;">
+                                            2×2分割表の指標・回帰分析・混同行列
+                                        </p>
+                                        <div style="margin-top: 8px; font-size: 14px; opacity: 0.8;">
+                                            <i class="fas fa-calendar-alt" style="margin-right: 8px;"></i>
+                                            2025年7月9日
+                                        </div>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; font-size: 14px;">
+                                        第7週
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3);">
+                                    <div class="flex gap-2">
+                                        <a href="#" class="daib-btn" style="background: white; color: var(--daib-primary);" 
+                                           onclick="DAIB_STATE.setLearningPage('survey')">
+                                            <i class="fas fa-clipboard-list"></i>
+                                            理解度アンケート
+                                        </a>
+                                        <a href="#" class="daib-btn" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);" 
+                                           onclick="DAIB_STATE.setLearningPage('problems')">
+                                            <i class="fas fa-brain"></i>
+                                            個別問題
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 今すぐできること -->
+                        <div class="content-card">
+                            <h2>今すぐできること</h2>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div style="padding: 20px; border: 2px dashed #ddd; border-radius: 12px; 
+                                            text-align: center; cursor: pointer; transition: all 0.3s ease;"
+                                     onmouseover="this.style.borderColor='var(--daib-primary)'; this.style.background='rgba(102,51,153,0.05)'"
+                                     onmouseout="this.style.borderColor='#ddd'; this.style.background='transparent'"
+                                     onclick="DAIB_STATE.setLearningPage('problems')">
+                                    <i class="fas fa-brain" style="font-size: 32px; color: var(--daib-primary); margin-bottom: 12px;"></i>
+                                    <h3 style="margin: 0 0 8px 0; color: var(--daib-primary);">個別問題に挑戦</h3>
+                                    <p style="margin: 0; font-size: 14px; color: #666;">
+                                        あなた専用の問題が<span id="action-pending-problems">5</span>問待っています
+                                    </p>
+                                </div>
+
+                                <div style="padding: 20px; border: 2px dashed #ddd; border-radius: 12px; 
+                                            text-align: center; cursor: pointer; transition: all 0.3s ease;"
+                                     onmouseover="this.style.borderColor='var(--daib-success)'; this.style.background='rgba(5,150,105,0.05)'"
+                                     onmouseout="this.style.borderColor='#ddd'; this.style.background='transparent'"
+                                     onclick="DAIB_STATE.setLearningPage('results')">
+                                    <i class="fas fa-trophy" style="font-size: 32px; color: var(--daib-success); margin-bottom: 12px;"></i>
+                                    <h3 style="margin: 0 0 8px 0; color: var(--daib-success);">採点結果を確認</h3>
+                                    <p style="margin: 0; font-size: 14px; color: #666;">
+                                        解答した問題の結果と解説
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 学習進捗グラフ -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                            <!-- 理解度推移グラフ -->
+                            <div class="content-card">
+                                <h2>理解度推移</h2>
+                                <div style="height: 300px; position: relative;">
+                                    <canvas id="understandingChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- キーワード別理解度グラフ -->
+                            <div class="content-card">
+                                <h2>キーワード別理解度</h2>
+                                <div style="height: 300px; position: relative;">
+                                    <canvas id="keywordChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 学習統計グラフ -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                            <!-- 問題解答状況グラフ -->
+                            <div class="content-card">
+                                <h2>問題解答状況</h2>
+                                <div style="height: 250px; position: relative;">
+                                    <canvas id="problemChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- 学習時間推移グラフ -->
+                            <div class="content-card">
+                                <h2>週別学習時間</h2>
+                                <div style="height: 250px; position: relative;">
+                                    <canvas id="studyTimeChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 過去の授業回データ閲覧セクション -->
+                        <div class="content-card">
+                            <h2>過去の授業回データ</h2>
+                            <p style="margin-bottom: 20px; color: #666;">
+                                過去の授業回のアンケート、問題、結果を確認できます。
+                            </p>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+                                <!-- 過去の授業回ボタンがJavaScriptで動的に生成される -->
+                                <div id="past-lectures-list">
+                                    <!-- 動的に生成される -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- その他のページコンテンツ（動的に切り替え） -->
+                    <div id="survey-content" class="hidden">
+                        <div class="content-card">
+                            <h2>理解度アンケート - 第7回</h2>
+                            <p style="margin-bottom: 24px; color: #666;">
+                                各キーワードについて、あなたの理解度を5段階で評価してください。
+                            </p>
+                            
+                            <form id="understanding-survey">
+                                <div id="keyword-evaluations">
+                                    <!-- キーワード別評価がJavaScriptで動的に生成される -->
+                                </div>
+                                
+                                <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e0e0e0;">
+                                    <h3 style="margin: 0 0 16px 0;">勉強時間と感想</h3>
+                                    
+                                    <!-- 勉強時間入力欄 -->
+                                    <div style="margin-bottom: 20px;">
+                                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">
+                                            今回の授業の勉強時間（分単位で入力）
+                                        </label>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <input 
+                                                type="number" 
+                                                id="study-time" 
+                                                class="daib-input" 
+                                                placeholder="90" 
+                                                min="0" 
+                                                max="1440"
+                                                style="width: 120px;">
+                                            <span style="color: #666; font-size: 14px;">分</span>
+                                        </div>
+                                        <p style="margin: 8px 0 0 0; font-size: 12px; color: #666;">
+                                            講義視聴、資料読み込み、復習などを含めた総学習時間
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- 感想入力欄 -->
+                                    <div style="margin-bottom: 16px;">
+                                        <label style="display: block; margin-bottom: 8px; font-weight: 600;">
+                                            全体的な感想
+                                        </label>
+                                        <textarea 
+                                            id="overall-feedback" 
+                                            class="daib-input daib-textarea" 
+                                            placeholder="今回の講義で気になったこと、質問したいことなどを自由に記入してください（任意）"></textarea>
+                                    </div>
+                                    
+                                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                                        <button type="button" class="daib-btn daib-btn-secondary" onclick="resetSurvey()">
+                                            リセット
+                                        </button>
+                                        <button type="submit" class="daib-btn daib-btn-primary">
+                                            <i class="fas fa-paper-plane"></i>
+                                            提出する
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="problems-content" class="hidden">
+                        <div class="content-card">
+                            <h2>個別問題 - 第7回</h2>
+                            <p style="margin-bottom: 24px; color: #666;">
+                                あなたの理解度に基づいて生成された問題です。じっくり考えて解答してください。
+                            </p>
+                            
+                            <div style="margin-bottom: 24px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                    <span style="font-weight: 600; color: var(--daib-primary);">進捗状況</span>
+                                    <span id="problem-progress" style="font-size: 14px; color: #666;">1 / 5</span>
+                                </div>
+                                <div class="progress-container">
+                                    <div class="progress-bar" id="problem-progress-bar" style="width: 20%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div id="problem-container">
+                                <!-- 問題がJavaScriptで動的に生成される -->
+                            </div>
+                            
+                            <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+                                <button type="button" class="daib-btn daib-btn-secondary" onclick="previousProblem()" id="prev-btn" disabled>
+                                    <i class="fas fa-arrow-left"></i>
+                                    前の問題
+                                </button>
+                                
+                                <div style="display: flex; gap: 12px;">
+                                    <button type="button" class="daib-btn daib-btn-warning" onclick="skipProblem()" id="skip-btn">
+                                        スキップ
+                                    </button>
+                                    <button type="button" class="daib-btn daib-btn-primary" onclick="nextProblem()" id="next-btn">
+                                        次の問題
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="results-content" class="hidden">
+                        <div class="content-card">
+                            <h2>採点結果 - 第7回</h2>
+                            <p style="margin-bottom: 24px; color: #666;">
+                                解答した問題の採点結果と詳細な解説を確認できます。
+                            </p>
+                            
+                            <div id="results-summary" style="margin-bottom: 32px;">
+                                <!-- 結果サマリーがJavaScriptで動的に生成される -->
+                            </div>
+                            
+                            <div id="results-details">
+                                <!-- 詳細結果がJavaScriptで動的に生成される -->
+                            </div>
+                            
+                            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #e0e0e0;">
+                                <div style="display: flex; gap: 12px; justify-content: center;">
+                                    <button type="button" class="daib-btn daib-btn-secondary" onclick="DAIB_STATE.setLearningPage('problems')">
+                                        <i class="fas fa-redo"></i>
+                                        問題に戻る
+                                    </button>
+                                    <button type="button" class="daib-btn daib-btn-primary" onclick="DAIB_STATE.setLearningPage('dashboard')">
+                                        <i class="fas fa-home"></i>
+                                        ダッシュボード
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- チャットエリア（既存のDAIB機能） -->
+                <div class="daib-chat-area" id="chat-area" style="display: none; flex-direction: row; width: 100%;">
+                    <!-- メインチャット部分 -->
+                    <div style="flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--daib-border);">
+                        <!-- 一般チャット -->
+                        <div id="general-chat" class="chat-content">
+                            <div class="daib-chat-messages">
+                                <div style="padding: 20px; border-left: 4px solid var(--daib-primary); background: rgba(102, 51, 153, 0.05); border-radius: 8px; margin-bottom: 20px;">
+                                    <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                        <div style="width: 40px; height: 40px; background: var(--daib-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                            <i class="fas fa-robot" style="color: white;"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: var(--daib-primary);">DAIB</div>
+                                            <div style="font-size: 12px; color: #666;">学習支援AI</div>
+                                        </div>
+                                    </div>
+                                    <div style="line-height: 1.6; color: #333;">
+                                        こんにちは、私は学生の皆さんの学習を支援するDAIB(ダイブ：Doshisha AI Buddy ver.5)です。学生の修学や生活に関する質問にお答えします。<br><br>
+                                        <strong>【利用上の注意】</strong><br>
+                                        ・AIは学習データに基づいており、常に正確とは限りません。<br>
+                                        ・AIの回答をそのまま信用せず、必ず複数の情報源と照らし合わせて確認してください。<br>
+                                        ・個人情報や機密情報をAIに入力することは避けてください。<br>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="daib-chat-input">
+                                <div style="position: relative;">
+                                    <textarea id="chat-input" placeholder="メッセージを入力してください..." 
+                                             style="width: 100%; height: 60px; resize: none; padding: 12px 50px 12px 12px; 
+                                                    border: 2px solid #ddd; border-radius: 8px;"></textarea>
+                                    <button onclick="sendMessage()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); 
+                                                  background: var(--daib-primary); border: none; border-radius: 6px; 
+                                                  padding: 8px; color: white; cursor: pointer;">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- データサイエンス基礎チャット -->
+                        <div id="data-science-chat" class="chat-content" style="display: none;">
+                            <div class="daib-chat-messages">
+                                <div style="padding: 20px; border-left: 4px solid var(--daib-primary); background: rgba(102, 51, 153, 0.05); border-radius: 8px; margin-bottom: 20px;">
+                                    <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                        <div style="width: 40px; height: 40px; background: var(--daib-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                            <i class="fas fa-chart-bar" style="color: white;"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: var(--daib-primary);">DAIB</div>
+                                            <div style="font-size: 12px; color: #666;">データサイエンス基礎</div>
+                                        </div>
+                                    </div>
+                                    <div style="line-height: 1.6; color: #333;">
+                                        こんにちは、私は学生の皆さんの学習を支援するDAIB(ダイブ：Doshisha AI Buddy ver.5)です。「データサイエンス基礎」の講義内容に関する質問にお答えします。使用する機能を選択してください。<br><br>
+                                        <strong>【利用上の注意】</strong><br>
+                                        ・AIが回答を生成する際、数式はLaTex形式で表示されることがあります。<br>
+                                        ・重要な判断は必ず信頼できる情報源で確認してください。
+                                    </div>
+                                </div>
+                                
+                                <div id="chat-feature-content">
+                                    <!-- 機能選択後のコンテンツが表示される -->
+                                </div>
+                            </div>
+                            
+                            <div class="daib-chat-input">
+                                <div style="position: relative;">
+                                    <textarea id="chat-input-ds" placeholder="データサイエンス基礎について質問してください..." 
+                                             style="width: 100%; height: 60px; resize: none; padding: 12px 50px 12px 12px; 
+                                                    border: 2px solid #ddd; border-radius: 8px;"></textarea>
+                                    <button onclick="sendMessage()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); 
+                                                  background: var(--daib-primary); border: none; border-radius: 6px; 
+                                                  padding: 8px; color: white; cursor: pointer;">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- データサイエンス概論チャット -->
+                        <div id="data-overview-chat" class="chat-content" style="display: none;">
+                            <div class="daib-chat-messages">
+                                <div style="padding: 20px; border-left: 4px solid var(--daib-primary); background: rgba(102, 51, 153, 0.05); border-radius: 8px; margin-bottom: 20px;">
+                                    <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                        <div style="width: 40px; height: 40px; background: var(--daib-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                            <i class="fas fa-database" style="color: white;"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: var(--daib-primary);">DAIB</div>
+                                            <div style="font-size: 12px; color: #666;">データサイエンス概論</div>
+                                        </div>
+                                    </div>
+                                    <div style="line-height: 1.6; color: #333;">
+                                        こんにちは、私は学生の皆さんの学習を支援するDAIB(ダイブ：Doshisha AI Buddy ver.5)です。「データサイエンス概論」の講義内容に関する質問にお答えします。使用する機能を選択してください。<br><br>
+                                        <strong>【利用上の注意】</strong><br>
+                                        ・AIが回答を生成する際、数式はLaTex形式で表示されることがあります。<br>
+                                        ・重要な判断は必ず信頼できる情報源で確認してください。
+                                    </div>
+                                </div>
+                                
+                                <div id="chat-feature-content-overview">
+                                    <!-- 機能選択後のコンテンツが表示される -->
+                                </div>
+                            </div>
+                            
+                            <div class="daib-chat-input">
+                                <div style="position: relative;">
+                                    <textarea id="chat-input-overview" placeholder="データサイエンス概論について質問してください..." 
+                                             style="width: 100%; height: 60px; resize: none; padding: 12px 50px 12px 12px; 
+                                                    border: 2px solid #ddd; border-radius: 8px;"></textarea>
+                                    <button onclick="sendMessage()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); 
+                                                  background: var(--daib-primary); border: none; border-radius: 6px; 
+                                                  padding: 8px; color: white; cursor: pointer;">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右側メニュー -->
+                    <div id="chat-right-menu" style="width: 350px; background: var(--daib-surface); display: none;">
+                        <div style="padding: 16px; border-bottom: 1px solid var(--daib-border);">
+                            <h3 style="margin: 0; color: var(--daib-text); font-size: 16px;">メニュー ＞</h3>
+                        </div>
+                        
+                        <div style="padding: 16px; overflow-y: auto; height: calc(100vh - 120px);">
+                            <!-- 授業回選択 -->
+                            <div style="margin-bottom: 24px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600;">授業回</label>
+                                <select class="daib-input" style="width: 100%;">
+                                    <option>第1回</option>
+                                    <option>第2回</option>
+                                    <option>第3回</option>
+                                    <option>第4回</option>
+                                    <option>第5回</option>
+                                    <option>第6回</option>
+                                    <option>第7回</option>
+                                    <option selected>第8回</option>
+                                    <option>第9回</option>
+                                    <option>第10回</option>
+                                    <option>第11回</option>
+                                    <option>第12回</option>
+                                    <option>第13回</option>
+                                    <option>第14回</option>
+                                    <option>第15回</option>
+                                </select>
+                            </div>
+                            
+                            <!-- メニュー項目 -->
+                            <div style="display: flex; flex-direction: column; gap: 20px;">
+                                <!-- 要約セクション -->
+                                <div>
+                                    <h4 style="margin: 0 0 8px 0; color: var(--daib-text); font-size: 14px;">▼ 要約</h4>
+                                    <p style="margin: 0 0 12px 0; font-size: 12px; color: #666;">講義の簡易要約または詳細要約</p>
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                                        <div>
+                                            <strong style="display: block; margin-bottom: 4px; font-size: 13px;">▼ 講義スライド</strong>
+                                            <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 12px;">
+                                                <a href="#" class="nav-item" onclick="showChatFeature('summary')" style="background: #c6d7ff; color: #1820bf; padding: 4px 8px; border-radius: 4px; text-decoration: underline; font-size: 12px;">
+                                                    ・簡易要約
+                                                </a>
+                                                <a href="#" class="nav-item" onclick="showChatFeature('detailed-summary')" style="padding: 4px 8px; font-size: 12px;">・詳細要約</a>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <strong style="display: block; margin-bottom: 4px; font-size: 13px;">▼ 動画</strong>
+                                            <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 12px;">
+                                                <a href="#" class="nav-item" onclick="showChatFeature('video-summary')" style="padding: 4px 8px; font-size: 12px;">・簡易要約</a>
+                                                <a href="#" class="nav-item" onclick="showChatFeature('video-detailed')" style="padding: 4px 8px; font-size: 12px;">・詳細要約</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 設問作成セクション -->
+                                <div>
+                                    <h4 style="margin: 0 0 8px 0; color: var(--daib-text); font-size: 14px;">▼ 設問作成</h4>
+                                    <p style="margin: 0 0 12px 0; font-size: 12px; color: #666;">講義内容に基づいた演習問題</p>
+                                    <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 12px;">
+                                        <a href="#" class="nav-item" onclick="showChatFeature('fill-blank')" style="padding: 4px 8px; font-size: 12px;">・穴埋め式</a>
+                                        <a href="#" class="nav-item" onclick="showChatFeature('multiple-choice')" style="padding: 4px 8px; font-size: 12px;">・選択式</a>
+                                        <a href="#" class="nav-item" onclick="showChatFeature('free-response')" style="padding: 4px 8px; font-size: 12px;">・自由記述式</a>
+                                    </div>
+                                </div>
+                                
+                                <!-- キーワード解説セクション -->
+                                <div>
+                                    <h4 style="margin: 0 0 8px 0; color: var(--daib-text); font-size: 14px;">▼ 講義資料キーワード</h4>
+                                    <p style="margin: 0 0 12px 0; font-size: 12px; color: #666;">重要なキーワードの解説</p>
+                                    <div style="display: flex; flex-direction: column; gap: 4px; margin-left: 12px;">
+                                        <a href="#" class="nav-item" onclick="showChatFeature('keywords')" style="padding: 4px 8px; font-size: 12px;">・データリテラシー</a>
+                                        <a href="#" class="nav-item" onclick="showChatFeature('keywords')" style="padding: 4px 8px; font-size: 12px;">・散布図</a>
+                                        <a href="#" class="nav-item" onclick="showChatFeature('keywords')" style="padding: 4px 8px; font-size: 12px;">・共分散</a>
+                                        <a href="#" class="nav-item" onclick="showChatFeature('keywords')" style="padding: 4px 8px; font-size: 12px;">・疑似相関</a>
+                                        <a href="#" class="nav-item" onclick="showChatFeature('keywords')" style="padding: 4px 8px; font-size: 12px;">・相関係数</a>
+                                        <a href="#" class="nav-item" onclick="showChatFeature('keywords')" style="padding: 4px 8px; font-size: 12px;">・因果関係</a>
+                                        <a href="#" class="nav-item" onclick="showChatFeature('keywords')" style="padding: 4px 8px; font-size: 12px;">・外れ値</a>
+                                        <a href="#" class="nav-item" onclick="showChatFeature('keywords')" style="padding: 4px 8px; font-size: 12px;">・偏相関係数</a>
+                                        <a href="#" class="nav-item" onclick="showChatFeature('keywords')" style="padding: 4px 8px; font-size: 12px;">・シンプソンのパラドクス</a>
+                                        <a href="#" class="nav-item" onclick="showChatFeature('keywords')" style="padding: 4px 8px; font-size: 12px;">・量的変数</a>
+                                    </div>
+                                </div>
+                                
+                                <!-- 参考資料キーワード -->
+                                <div>
+                                    <h4 style="margin: 0 0 8px 0; color: var(--daib-text); font-size: 14px;">▼ 参考資料キーワード</h4>
+                                    <p style="margin: 0 0 12px 0; font-size: 12px; color: #666;">参考資料の主要キーワード</p>
+                                </div>
+                                
+                                <!-- 動画検索 -->
+                                <div>
+                                    <h4 style="margin: 0 0 8px 0; color: var(--daib-text); font-size: 14px;">▼ 動画検索</h4>
+                                    <p style="margin: 0 0 12px 0; font-size: 12px; color: #666;">講義動画をキーワードで検索</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../common/data.js"></script>
+    <script>
+        // ページ初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStudentData();
+            loadNotifications();
+            loadPastLectures();
+            initializeCharts();
+            initializeSurvey();
+            
+            // 学習進捗システムを初期化
+            LEARNING_PROGRESS.initialize();
+            
+            // 初期状態を学習モードに設定（デフォルトでダッシュボード表示）
+            DAIB_STATE.setLearningPage('dashboard');
+            DAIB_STATE.updateMenuUI();
+            
+            // デバッグ用：進捗状態をリセット（テスト用）
+            localStorage.removeItem('learning_progress');
+            
+            // 通知状態を強制更新
+            setTimeout(() => {
+                LEARNING_PROGRESS.updateNotifications();
+            }, 100);
+        });
+
+        // 新しいチャット開始
+        function startNewChat() {
+            DAIB_STATE.setMode('chat', 'general');
+            alert('新しいチャットを開始しました。');
+        }
+
+        function loadStudentData() {
+            const student = LocalStorage.getCurrentUser();
+            
+            document.getElementById('student-name').textContent = student.name;
+            document.getElementById('overall-understanding').textContent = student.overall_understanding;
+            document.getElementById('completed-surveys').textContent = student.completed_surveys;
+            document.getElementById('total-surveys').textContent = student.total_surveys;
+            document.getElementById('pending-problems').textContent = student.pending_problems;
+            document.getElementById('action-pending-problems').textContent = student.pending_problems;
+            document.getElementById('latest-score').textContent = student.latest_score;
+        }
+
+        function loadNotifications() {
+            const student = LocalStorage.getCurrentUser();
+            const notificationsContainer = document.getElementById('notifications');
+            
+            student.notifications.slice(0, 3).forEach(notification => {
+                const notificationElement = document.createElement('div');
+                notificationElement.className = `notification ${getNotificationType(notification.type)}`;
+                
+                const date = new Date(notification.created_at);
+                
+                notificationElement.innerHTML = `
+                    <div style="display: flex; align-items: start; gap: 8px;">
+                        <i class="${getNotificationIcon(notification.type)}" style="margin-top: 2px;"></i>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; margin-bottom: 4px; font-size: 14px;">${notification.title}</div>
+                            <div style="font-size: 12px; color: #666; margin-bottom: 4px;">${notification.message}</div>
+                            <div style="font-size: 11px; color: #999;">
+                                ${date.toLocaleString('ja-JP', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                notificationsContainer.appendChild(notificationElement);
+            });
+        }
+
+        function loadPastLectures() {
+            const container = document.getElementById('past-lectures-list');
+            if (!container) return;
+            
+            // 過去の授業回データ（第1回〜第6回）
+            const pastLectures = [
+                { week: 1, title: 'データサイエンス入門', date: '2025-05-15' },
+                { week: 2, title: 'データの種類と可視化', date: '2025-05-22' },
+                { week: 3, title: '記述統計学', date: '2025-05-29' },
+                { week: 4, title: '確率分布', date: '2025-06-05' },
+                { week: 5, title: '統計的推定', date: '2025-06-12' },
+                { week: 6, title: '仮説検定', date: '2025-06-19' }
+            ];
+            
+            pastLectures.forEach(lecture => {
+                const lectureDiv = document.createElement('div');
+                lectureDiv.className = 'content-card';
+                lectureDiv.style.cssText = 'padding: 16px; cursor: pointer; transition: all 0.3s ease; border: 1px solid #e0e0e0;';
+                
+                lectureDiv.innerHTML = `
+                    <h4 style="margin: 0 0 8px 0; color: var(--daib-primary);">第${lecture.week}回</h4>
+                    <p style="margin: 0 0 8px 0; font-size: 14px; font-weight: 500;">${lecture.title}</p>
+                    <p style="margin: 0; font-size: 12px; color: #666;">${lecture.date}</p>
+                    <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="daib-btn" style="font-size: 12px; padding: 4px 8px;" onclick="viewPastData('survey', ${lecture.week})">
+                            アンケート
+                        </button>
+                        <button class="daib-btn daib-btn-secondary" style="font-size: 12px; padding: 4px 8px;" onclick="viewPastData('problems', ${lecture.week})">
+                            問題
+                        </button>
+                        <button class="daib-btn" style="font-size: 12px; padding: 4px 8px; background: var(--daib-success);" onclick="viewPastData('results', ${lecture.week})">
+                            結果
+                        </button>
+                    </div>
+                `;
+                
+                lectureDiv.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 4px 12px rgba(102, 51, 153, 0.15)';
+                    this.style.transform = 'translateY(-2px)';
+                });
+                
+                lectureDiv.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '';
+                    this.style.transform = '';
+                });
+                
+                container.appendChild(lectureDiv);
+            });
+        }
+
+        function viewPastData(type, week) {
+            // 過去のデータを表示する機能
+            alert(`第${week}回の${type === 'survey' ? 'アンケート' : type === 'problems' ? '問題' : '結果'}を表示します（実装予定）`);
+        }
+
+        function getNotificationIcon(type) {
+            switch (type) {
+                case 'achievement': return 'fas fa-trophy';
+                case 'concern': return 'fas fa-exclamation-triangle';
+                case 'reminder': return 'fas fa-bell';
+                default: return 'fas fa-info-circle';
+            }
+        }
+
+        function getNotificationType(type) {
+            switch (type) {
+                case 'achievement': return 'success';
+                case 'concern': return 'warning';
+                case 'reminder': return 'info';
+                default: return 'info';
+            }
+        }
+
+        // 折りたたみメニュー制御
+        function toggleNavSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const toggle = document.getElementById(sectionId + '-toggle');
+            
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                toggle.classList.remove('expanded');
+            } else {
+                content.classList.add('expanded');
+                toggle.classList.add('expanded');
+            }
+        }
+
+        // グラフ初期化
+        function initializeCharts() {
+            // 共通のカラーパレット（同志社ロイヤル・パープル系）
+            const primaryColor = '#663399';
+            const secondaryColor = '#8066b3';
+            const tertiaryColor = '#a386c4';
+            const backgroundColor = 'rgba(102, 51, 153, 0.1)';
+            
+            // 1. 理解度推移グラフ（線グラフ）
+            const understandingCtx = document.getElementById('understandingChart').getContext('2d');
+            new Chart(understandingCtx, {
+                type: 'line',
+                data: {
+                    labels: ['第1週', '第2週', '第3週', '第4週', '第5週', '第6週', '第7週'],
+                    datasets: [{
+                        label: '総合理解度',
+                        data: [2.1, 2.3, 2.8, 3.0, 3.1, 2.9, 3.2],
+                        borderColor: primaryColor,
+                        backgroundColor: backgroundColor,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: primaryColor,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    return value + '.0';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 2. キーワード別理解度グラフ（レーダーチャート）
+            const keywordCtx = document.getElementById('keywordChart').getContext('2d');
+            new Chart(keywordCtx, {
+                type: 'radar',
+                data: {
+                    labels: [
+                        '2×2分割表',
+                        'リスク比',
+                        '混同行列',
+                        '回帰分析',
+                        '単回帰モデル',
+                        '最小二乗法',
+                        '決定係数',
+                        'R統計'
+                    ],
+                    datasets: [{
+                        label: '理解度',
+                        data: [3.5, 2.8, 3.2, 3.8, 3.0, 2.5, 3.7, 2.9],
+                        borderColor: primaryColor,
+                        backgroundColor: backgroundColor,
+                        borderWidth: 2,
+                        pointBackgroundColor: primaryColor,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 3. 問題解答状況グラフ（ドーナツチャート）
+            const problemCtx = document.getElementById('problemChart').getContext('2d');
+            new Chart(problemCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['正解', '部分正解', '不正解', '未解答'],
+                    datasets: [{
+                        data: [12, 5, 3, 5],
+                        backgroundColor: [
+                            '#059669',
+                            '#d97706',
+                            '#dc2626',
+                            '#6b7280'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 4. 学習時間推移グラフ（棒グラフ）
+            const studyTimeCtx = document.getElementById('studyTimeChart').getContext('2d');
+            new Chart(studyTimeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['第1週', '第2週', '第3週', '第4週', '第5週', '第6週', '第7週'],
+                    datasets: [{
+                        label: '学習時間 (分)',
+                        data: [45, 60, 75, 90, 80, 85, 95],
+                        backgroundColor: backgroundColor,
+                        borderColor: primaryColor,
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '分';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // DAIB_STATEの拡張（ページ切り替え機能）
+        DAIB_STATE.setMode = function(mode, subType) {
+            this.currentMode = mode;
+            this.currentSubType = subType;
+            
+            // すべてのナビゲーション項目のアクティブ状態をリセット
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            if (mode === 'chat') {
+                // チャット機能を表示
+                document.getElementById('learning-area').style.display = 'none';
+                document.getElementById('chat-area').style.display = 'flex';
+                
+                // チャットコンテンツの切り替え
+                document.querySelectorAll('.chat-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                
+                // タイトル更新とチャット表示
+                const titles = {
+                    'general': 'DAIBチャット',
+                    'data-science': 'データサイエンス基礎',
+                    'data-overview': 'データサイエンス概論'
+                };
+                document.getElementById('content-title').textContent = titles[subType] || 'DAIBチャット';
+                
+                // 対応するチャットコンテンツを表示
+                const chatContent = document.getElementById(subType + '-chat');
+                if (chatContent) {
+                    chatContent.style.display = 'block';
+                }
+                
+                // 右側メニューの表示制御
+                const rightMenu = document.getElementById('chat-right-menu');
+                if (rightMenu) {
+                    if (subType === 'data-science' || subType === 'data-overview') {
+                        rightMenu.style.display = 'block';
+                    } else {
+                        rightMenu.style.display = 'none';
+                    }
+                }
+                
+                // 対応するナビゲーション項目をアクティブに
+                const activeItem = document.querySelector(`[data-mode="chat"][onclick*="${subType}"]`);
+                if (activeItem) {
+                    activeItem.classList.add('active');
+                }
+            } else {
+                // 学習機能を表示
+                document.getElementById('learning-area').style.display = 'block';
+                document.getElementById('chat-area').style.display = 'none';
+                
+                // 右側メニューを隠す
+                const rightMenu = document.getElementById('chat-right-menu');
+                if (rightMenu) {
+                    rightMenu.style.display = 'none';
+                }
+                
+                // デフォルトでダッシュボードを表示
+                this.setLearningPage('dashboard');
+            }
+        };
+
+        // チャット機能
+        function showChatFeature(feature) {
+            const contentId = DAIB_STATE.currentSubType === 'data-science' ? 'chat-feature-content' : 'chat-feature-content-overview';
+            const container = document.getElementById(contentId);
+            
+            const featureContent = {
+                'summary': {
+                    title: '講義要約',
+                    icon: 'fas fa-file-alt',
+                    content: `
+                        <div class="content-card">
+                            <h3>簡易要約</h3>
+                            <p>今回の講義では、2×2分割表を用いた診断テストの精度評価について学習しました。感度、特異度、精度などの指標を理解し、実際の医療現場での活用方法を学びました。</p>
+                        </div>
+                        <div class="content-card">
+                            <h3>詳細要約</h3>
+                            <p>第7回講義では以下の内容を扱いました：</p>
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                <li>2×2分割表の構造と読み方</li>
+                                <li>感度（真陽性率）の計算と解釈</li>
+                                <li>特異度（真陰性率）の計算と解釈</li>
+                                <li>リスク比とオッズ比の違い</li>
+                                <li>混同行列を用いた機械学習モデルの評価</li>
+                                <li>回帰分析の基礎概念</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                'keywords': {
+                    title: 'キーワード解説',
+                    icon: 'fas fa-tags',
+                    content: `
+                        <div class="content-card">
+                            <h3>第7回のキーワード</h3>
+                            <div style="display: grid; gap: 12px;">
+                                <div style="padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                                    <strong>2×2分割表の指標</strong><br>
+                                    <span style="color: #666; font-size: 14px;">診断テストの精度を評価するための表形式の集計方法</span>
+                                </div>
+                                <div style="padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                                    <strong>感度（Sensitivity）</strong><br>
+                                    <span style="color: #666; font-size: 14px;">実際に陽性のうち、正しく陽性と判定される割合</span>
+                                </div>
+                                <div style="padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                                    <strong>特異度（Specificity）</strong><br>
+                                    <span style="color: #666; font-size: 14px;">実際に陰性のうち、正しく陰性と判定される割合</span>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                'problems': {
+                    title: '設問作成',
+                    icon: 'fas fa-question-circle',
+                    content: `
+                        <div class="content-card">
+                            <h3>穴埋め問題</h3>
+                            <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                                <p>2×2分割表において、感度は【　　　　　】を【　　　　　】で割った値である。</p>
+                                <details style="margin-top: 12px;">
+                                    <summary style="cursor: pointer; color: var(--daib-primary);">解答を見る</summary>
+                                    <p style="margin-top: 8px; color: #666;">真陽性、真陽性+偽陰性</p>
+                                </details>
+                            </div>
+                        </div>
+                        <div class="content-card">
+                            <h3>選択問題</h3>
+                            <div style="background: #f8f9fa; padding: 16px; border-radius: 8px;">
+                                <p>リスク比の正しい定義はどれか？</p>
+                                <div style="margin-top: 12px;">
+                                    <div>A. 暴露群のリスク - 非暴露群のリスク</div>
+                                    <div>B. 暴露群のリスク ÷ 非暴露群のリスク</div>
+                                    <div>C. 暴露群のオッズ ÷ 非暴露群のオッズ</div>
+                                    <div>D. 暴露群のリスク × 非暴露群のリスク</div>
+                                </div>
+                                <details style="margin-top: 12px;">
+                                    <summary style="cursor: pointer; color: var(--daib-primary);">解答を見る</summary>
+                                    <p style="margin-top: 8px; color: #666;">正解：B</p>
+                                </details>
+                            </div>
+                        </div>
+                    `
+                },
+                'video': {
+                    title: '動画検索',
+                    icon: 'fas fa-video',
+                    content: `
+                        <div class="content-card">
+                            <h3>関連動画</h3>
+                            <div style="display: grid; gap: 12px;">
+                                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 60px; height: 40px; background: var(--daib-primary); border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-play" style="color: white;"></i>
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; margin-bottom: 4px;">2×2分割表の基礎</div>
+                                            <div style="font-size: 12px; color: #666;">第7回講義 - 15:30～28:45</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 60px; height: 40px; background: var(--daib-primary); border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-play" style="color: white;"></i>
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; margin-bottom: 4px;">回帰分析入門</div>
+                                            <div style="font-size: 12px; color: #666;">第7回講義 - 45:20～62:10</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }
+            };
+            
+            const selected = featureContent[feature];
+            if (selected) {
+                container.innerHTML = `
+                    <div class="content-card">
+                        <h2 style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
+                            <i class="${selected.icon}" style="color: var(--daib-primary);"></i>
+                            ${selected.title}
+                        </h2>
+                        ${selected.content}
+                    </div>
+                `;
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                // メッセージ送信のデモ実装
+                console.log('送信メッセージ:', message);
+                input.value = '';
+                
+                // 実際のシステムではここでAPIを呼び出してレスポンスを取得
+                // 今回はデモなので何もしない
+            }
+        }
+
+        // Enterキーでメッセージ送信
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                const input = document.getElementById('chat-input');
+                if (document.activeElement === input) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            }
+        });
+
+        DAIB_STATE.setLearningPage = function(page) {
+            this.currentLearningPage = page;
+            this.currentMode = 'learning';
+            
+            // 学習エリアを表示
+            document.getElementById('learning-area').style.display = 'block';
+            document.getElementById('chat-area').style.display = 'none';
+            
+            // すべてのコンテンツを非表示
+            ['dashboard', 'survey', 'problems', 'results'].forEach(p => {
+                const element = document.getElementById(p + '-content');
+                if (element) {
+                    element.classList.add('hidden');
+                }
+            });
+            
+            // 選択されたコンテンツを表示
+            const selectedContent = document.getElementById(page + '-content');
+            if (selectedContent) {
+                selectedContent.classList.remove('hidden');
+            }
+            
+            // タイトル更新
+            const titles = {
+                'dashboard': '学習ダッシュボード',
+                'survey': '理解度アンケート',
+                'problems': '個別問題',
+                'results': '採点結果'
+            };
+            document.getElementById('content-title').textContent = titles[page] || '学習ダッシュボード';
+            
+            // ナビゲーション更新
+            this.updateLearningNavigation();
+            
+            // ページ固有の初期化
+            if (page === 'survey') {
+                initializeSurvey();
+            } else if (page === 'problems') {
+                initializeProblems();
+            } else if (page === 'results') {
+                initializeResults();
+            }
+        };
+
+        DAIB_STATE.updateLearningNavigation = function() {
+            // 学習振り返りセクションのナビゲーション項目をリセット
+            document.querySelectorAll('[data-page]').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 現在のページに対応する項目をアクティブに
+            const currentNavItem = document.querySelector(`[data-page="${this.currentLearningPage}"]`);
+            if (currentNavItem) {
+                currentNavItem.classList.add('active');
+            }
+        };
+
+        // 理解度アンケート機能
+        function initializeSurvey() {
+            const container = document.getElementById('keyword-evaluations');
+            if (!container) return;
+            
+            // 既存のコンテンツをクリア
+            container.innerHTML = '';
+            
+            // 既存の回答を取得
+            const responses = LocalStorage.getSurveyResponses();
+            
+            // 現在選択中の授業データを取得
+            const currentSubject = getCurrentSubjectData();
+            
+            // キーワード評価の生成（重複を除去）
+            const uniqueKeywords = [...new Set(currentSubject.keywords)];
+            uniqueKeywords.forEach((keyword, index) => {
+                const keywordDiv = document.createElement('div');
+                keywordDiv.className = 'content-card';
+                keywordDiv.style.marginBottom = '20px';
+                
+                const savedValue = responses[`keyword_${index}`] || 0;
+                
+                keywordDiv.innerHTML = `
+                    <h3 style="margin: 0 0 16px 0; color: var(--daib-primary);">${keyword}</h3>
+                    <div class="understanding-grid">
+                        ${[1, 2, 3, 4, 5].map(level => `
+                            <div class="understanding-btn ${savedValue == level ? 'selected' : ''}" 
+                                 onclick="selectUnderstanding(${index}, ${level})">
+                                <span class="icon">${getUnderstandingIcon(level)}</span>
+                                <span class="level">${level}</span>
+                                <span class="label">${getUnderstandingLabel(level)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(keywordDiv);
+            });
+            
+            // 全体的な感想を復元
+            const feedback = document.getElementById('overall-feedback');
+            if (feedback && responses.overall_feedback) {
+                feedback.value = responses.overall_feedback;
+            }
+            
+            // 勉強時間を復元
+            const studyTime = document.getElementById('study-time');
+            if (studyTime && responses.study_time) {
+                studyTime.value = responses.study_time;
+            }
+        }
+
+        function getUnderstandingIcon(level) {
+            const icons = ['😫', '😕', '😐', '😊', '🤩'];
+            return icons[level - 1];
+        }
+
+        function getUnderstandingLabel(level) {
+            const labels = [
+                '全く理解<br>できない',
+                'あまり理解<br>できない', 
+                '普通に理解<br>できる',
+                'よく理解<br>できる',
+                '非常によく<br>理解できる'
+            ];
+            return labels[level - 1];
+        }
+
+        function selectUnderstanding(keywordIndex, level) {
+            // 同じキーワードの他のボタンから選択状態を削除
+            const allButtons = document.querySelectorAll(`#keyword-evaluations .content-card:nth-child(${keywordIndex + 1}) .understanding-btn`);
+            allButtons.forEach(btn => btn.classList.remove('selected'));
+            
+            // 選択されたボタンを強調表示
+            event.target.closest('.understanding-btn').classList.add('selected');
+            
+            // 回答をローカルストレージに保存
+            const responses = LocalStorage.getSurveyResponses();
+            responses[`keyword_${keywordIndex}`] = level;
+            LocalStorage.setSurveyResponses(responses);
+        }
+
+        function resetSurvey() {
+            if (confirm('アンケートをリセットしますか？入力した内容は削除されます。')) {
+                // ローカルストレージをクリア
+                LocalStorage.setSurveyResponses({});
+                
+                // フォームをリセット
+                document.getElementById('understanding-survey').reset();
+                
+                // 選択状態をリセット
+                document.querySelectorAll('.understanding-btn.selected').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                // 再初期化
+                initializeSurvey();
+            }
+        }
+
+        // アンケート提出処理
+        document.getElementById('understanding-survey').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const responses = LocalStorage.getSurveyResponses();
+            const feedback = document.getElementById('overall-feedback').value;
+            const studyTime = document.getElementById('study-time').value;
+            
+            // 勉強時間のバリデーション
+            if (!studyTime || studyTime < 0) {
+                alert('勉強時間を正しく入力してください。');
+                return;
+            }
+            
+            // 全体的な感想と勉強時間を保存
+            responses.overall_feedback = feedback;
+            responses.study_time = parseInt(studyTime);
+            responses.submitted_at = new Date().toISOString();
+            
+            // 必須項目のチェック（重複除去後のキーワード数）
+            const currentSubject = getCurrentSubjectData();
+            const uniqueKeywords = [...new Set(currentSubject.keywords)];
+            const requiredAnswers = uniqueKeywords.length;
+            const completedAnswers = Object.keys(responses).filter(key => key.startsWith('keyword_')).length;
+            
+            if (completedAnswers < requiredAnswers) {
+                alert(`すべてのキーワードについて評価してください。\n（${completedAnswers}/${requiredAnswers}項目完了）`);
+                return;
+            }
+            
+            // 提出処理
+            LocalStorage.setSurveyResponses(responses);
+            
+            // 学習進捗を更新
+            LEARNING_PROGRESS.updateWeekStatus(LEARNING_PROGRESS.currentWeek, 'survey_completed', true);
+            
+            // 成功メッセージ
+            alert('アンケートを提出しました。ご協力ありがとうございました！\n問題生成エージェントが稼働中です。ダッシュボードでお待ちください。');
+            
+            // ダッシュボードに遷移（問題生成エージェントが稼働するため）
+            DAIB_STATE.setLearningPage('dashboard');
+        });
+
+        // 個別問題機能
+        let currentProblemIndex = 0;
+        let problemAnswers = {};
+
+        function initializeProblems() {
+            currentProblemIndex = 0;
+            problemAnswers = LocalStorage.getProblemResults();
+            displayProblem();
+        }
+
+        function displayProblem() {
+            const container = document.getElementById('problem-container');
+            if (!container) return;
+            
+            // 現在選択中の授業データを取得
+            const currentSubject = getCurrentSubjectData();
+            const problem = currentSubject.problems[currentProblemIndex];
+            const isLastProblem = currentProblemIndex === currentSubject.problems.length - 1;
+            
+            // 進捗状況を更新
+            document.getElementById('problem-progress').textContent = `${currentProblemIndex + 1} / ${currentSubject.problems.length}`;
+            const progressPercent = ((currentProblemIndex + 1) / currentSubject.problems.length) * 100;
+            document.getElementById('problem-progress-bar').style.width = `${progressPercent}%`;
+            
+            // 既存の回答を取得
+            const savedAnswer = problemAnswers[problem.id] || {};
+            
+            container.innerHTML = `
+                <div class="content-card" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-left: 4px solid var(--daib-primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="margin: 0; color: var(--daib-primary);">問題 ${currentProblemIndex + 1}</h3>
+                        <span class="daib-btn" style="font-size: 12px; padding: 4px 8px; background: ${getDifficultyColor(problem.difficulty)}; color: white;">
+                            ${problem.difficulty}
+                        </span>
+                    </div>
+                    
+                    <h4 style="margin: 0 0 12px 0; color: var(--daib-text);">${problem.title}</h4>
+                    <p style="margin: 0 0 16px 0; line-height: 1.6; color: #666;">${problem.description}</p>
+                    
+                    <div style="font-size: 12px; color: #666; margin-bottom: 16px;">
+                        <i class="fas fa-tags"></i>
+                        関連キーワード: ${problem.keywords.join(', ')}
+                    </div>
+                    
+                    <div id="problem-answer-area">
+                        ${generateAnswerArea(problem, savedAnswer)}
+                    </div>
+                </div>
+            `;
+            
+            // ボタンの状態を更新
+            document.getElementById('prev-btn').disabled = currentProblemIndex === 0;
+            document.getElementById('next-btn').textContent = isLastProblem ? '完了' : '次の問題';
+            document.getElementById('next-btn').innerHTML = isLastProblem ? 
+                '<i class="fas fa-check"></i> 完了' : 
+                '次の問題 <i class="fas fa-arrow-right"></i>';
+        }
+
+        function getDifficultyColor(difficulty) {
+            switch(difficulty) {
+                case '基礎': return '#10b981'; // green
+                case '標準': return '#f59e0b'; // yellow
+                case '応用': return '#ef4444'; // red
+                default: return '#6b7280'; // gray
+            }
+        }
+
+        function generateAnswerArea(problem, savedAnswer) {
+            switch(problem.type) {
+                case 'calculation':
+                    return `
+                        <div style="margin-top: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">解答を入力してください:</label>
+                            <textarea 
+                                class="daib-input daib-textarea" 
+                                placeholder="計算過程や考え方も含めて記入してください..."
+                                onchange="saveProblemAnswer(${problem.id}, this.value)"
+                                style="min-height: 120px;">${savedAnswer.answer || ''}</textarea>
+                        </div>
+                    `;
+                    
+                case 'choice':
+                    const options = [
+                        'A) 病気を正しく検出する能力',
+                        'B) 健康な人を正しく判定する能力', 
+                        'C) 全体的な正確性',
+                        'D) 偽陽性の発生率'
+                    ];
+                    return `
+                        <div style="margin-top: 16px;">
+                            <label style="display: block; margin-bottom: 12px; font-weight: 600;">正しい選択肢を選んでください:</label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                ${options.map((option, index) => `
+                                    <label style="display: flex; align-items: center; padding: 8px; background: #f8f9fa; border-radius: 6px; cursor: pointer;">
+                                        <input type="radio" name="choice_${problem.id}" value="${String.fromCharCode(65 + index)}" 
+                                               ${savedAnswer.answer === String.fromCharCode(65 + index) ? 'checked' : ''}
+                                               onchange="saveProblemAnswer(${problem.id}, this.value)" 
+                                               style="margin-right: 8px;">
+                                        <span>${option}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    
+                case 'fill':
+                    return `
+                        <div style="margin-top: 16px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600;">空欄を埋めてください:</label>
+                            <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 12px;">
+                                <p style="margin: 0; line-height: 1.8;">
+                                    混同行列において、実際に陽性のサンプルを正しく陽性と判定する割合を 
+                                    <input type="text" 
+                                           value="${savedAnswer.answer || ''}"
+                                           onchange="saveProblemAnswer(${problem.id}, this.value)"
+                                           placeholder="答えを入力"
+                                           style="display: inline-block; width: 150px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; margin: 0 4px;">
+                                    と呼びます。
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    
+                default:
+                    return '<p>問題タイプが不明です。</p>';
+            }
+        }
+
+        function saveProblemAnswer(problemId, answer) {
+            problemAnswers[problemId] = {
+                answer: answer,
+                timestamp: new Date().toISOString()
+            };
+            LocalStorage.setProblemResults(problemAnswers);
+        }
+
+        function nextProblem() {
+            const currentSubject = getCurrentSubjectData();
+            const isLastProblem = currentProblemIndex === currentSubject.problems.length - 1;
+            
+            if (isLastProblem) {
+                // 完了処理
+                if (confirm('問題を完了しますか？採点エージェントが稼働します。')) {
+                    // 学習進捗を更新
+                    LEARNING_PROGRESS.updateWeekStatus(LEARNING_PROGRESS.currentWeek, 'problems_completed', true);
+                    alert('問題を提出しました。採点エージェントが稼働中です。ダッシュボードでお待ちください。');
+                    DAIB_STATE.setLearningPage('dashboard');
+                }
+            } else {
+                currentProblemIndex++;
+                displayProblem();
+            }
+        }
+
+        function previousProblem() {
+            if (currentProblemIndex > 0) {
+                currentProblemIndex--;
+                displayProblem();
+            }
+        }
+
+        function skipProblem() {
+            if (confirm('この問題をスキップしますか？')) {
+                nextProblem();
+            }
+        }
+
+        // 採点結果画面機能
+        function initializeResults() {
+            const problemResults = LocalStorage.getProblemResults();
+            const currentSubject = getCurrentSubjectData();
+            const problems = currentSubject.problems;
+            
+            // 結果サマリーを生成
+            generateResultsSummary(problemResults, problems);
+            
+            // 詳細結果を生成
+            generateResultsDetails(problemResults, problems);
+        }
+
+        function generateResultsSummary(results, problems) {
+            const container = document.getElementById('results-summary');
+            if (!container) return;
+            
+            const answeredCount = Object.keys(results).length;
+            const totalCount = problems.length;
+            const completionRate = totalCount > 0 ? (answeredCount / totalCount * 100).toFixed(1) : 0;
+            
+            // 模擬的な採点結果（実際はサーバーサイドで行う）
+            const mockScores = generateMockScores(results, problems);
+            const correctCount = mockScores.filter(score => score.isCorrect).length;
+            const accuracy = answeredCount > 0 ? (correctCount / answeredCount * 100).toFixed(1) : 0;
+            
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <h3 class="stat-card-title">回答完了率</h3>
+                            <i class="fas fa-chart-pie stat-card-icon"></i>
+                        </div>
+                        <div class="stat-card-value" style="color: var(--daib-primary);">${completionRate}%</div>
+                        <div style="font-size: 12px; color: #666;">${answeredCount}/${totalCount} 問題</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <h3 class="stat-card-title">正答率</h3>
+                            <i class="fas fa-bullseye stat-card-icon"></i>
+                        </div>
+                        <div class="stat-card-value" style="color: ${accuracy >= 70 ? 'var(--daib-success)' : accuracy >= 50 ? 'var(--daib-warning)' : 'var(--daib-error)'};">${accuracy}%</div>
+                        <div style="font-size: 12px; color: #666;">${correctCount}/${answeredCount} 問題</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <h3 class="stat-card-title">推定得点</h3>
+                            <i class="fas fa-star stat-card-icon"></i>
+                        </div>
+                        <div class="stat-card-value" style="color: var(--daib-primary);">${Math.round(accuracy * 0.8 + 20)}</div>
+                        <div style="font-size: 12px; color: #666;">100点満点</div>
+                    </div>
+                </div>
+                
+                <div class="content-card" style="margin-top: 24px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-left: 4px solid var(--daib-info);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--daib-info); display: flex; align-items: center;">
+                        <i class="fas fa-lightbulb" style="margin-right: 8px;"></i>
+                        総合評価
+                    </h3>
+                    <p style="margin: 0; line-height: 1.6; color: #0369a1;">
+                        ${generateFeedbackMessage(accuracy, completionRate)}
+                    </p>
+                </div>
+            `;
+        }
+
+        function generateResultsDetails(results, problems) {
+            const container = document.getElementById('results-details');
+            if (!container) return;
+            
+            const mockScores = generateMockScores(results, problems);
+            
+            container.innerHTML = `
+                <h3 style="margin: 0 0 20px 0; color: var(--daib-text);">問題別詳細結果</h3>
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    ${problems.map((problem, index) => {
+                        const result = results[problem.id];
+                        const score = mockScores.find(s => s.problemId === problem.id);
+                        
+                        return `
+                            <div class="content-card" style="border-left: 4px solid ${score ? (score.isCorrect ? 'var(--daib-success)' : 'var(--daib-error)') : '#ccc'};">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <h4 style="margin: 0; color: var(--daib-text);">問題${index + 1}: ${problem.title}</h4>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="daib-btn" style="font-size: 12px; padding: 4px 8px; background: ${getDifficultyColor(problem.difficulty)}; color: white;">
+                                            ${problem.difficulty}
+                                        </span>
+                                        ${score ? `
+                                            <span class="daib-btn" style="font-size: 12px; padding: 4px 8px; background: ${score.isCorrect ? 'var(--daib-success)' : 'var(--daib-error)'}; color: white;">
+                                                ${score.isCorrect ? '正解' : '不正解'}
+                                            </span>
+                                        ` : `
+                                            <span class="daib-btn" style="font-size: 12px; padding: 4px 8px; background: #ccc; color: white;">
+                                                未回答
+                                            </span>
+                                        `}
+                                    </div>
+                                </div>
+                                
+                                <div style="font-size: 12px; color: #666; margin-bottom: 12px;">
+                                    <i class="fas fa-tags"></i>
+                                    関連キーワード: ${problem.keywords.join(', ')}
+                                </div>
+                                
+                                ${result ? `
+                                    <div style="margin-bottom: 12px;">
+                                        <strong style="color: var(--daib-primary);">あなたの回答:</strong>
+                                        <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin-top: 8px;">
+                                            ${result.answer}
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div style="margin-bottom: 12px; color: #666;">
+                                        <em>この問題は回答されていません。</em>
+                                    </div>
+                                `}
+                                
+                                <div style="background: #f0f9ff; padding: 12px; border-radius: 6px; border-left: 3px solid var(--daib-info);">
+                                    <strong style="color: var(--daib-info);">解説:</strong>
+                                    <div style="margin-top: 8px; line-height: 1.6; color: #0369a1;">
+                                        ${generateExplanation(problem)}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function generateMockScores(results, problems) {
+            // 実際のプロジェクトでは、サーバーサイドで正解と照合する
+            const mockCorrectAnswers = {
+                1: "感度", // 計算問題の場合、キーワードが含まれているかで判定
+                2: "A",   // 選択問題の正解
+                3: "感度", // 穴埋め問題の正解
+                4: "回帰係数", // 計算問題
+                5: "C"    // 選択問題の正解
+            };
+            
+            return problems.map(problem => {
+                const result = results[problem.id];
+                if (!result) {
+                    return { problemId: problem.id, isCorrect: false, score: 0 };
+                }
+                
+                const correctAnswer = mockCorrectAnswers[problem.id];
+                const userAnswer = result.answer;
+                
+                let isCorrect = false;
+                if (problem.type === 'choice') {
+                    isCorrect = userAnswer === correctAnswer;
+                } else {
+                    // 計算問題や穴埋め問題の場合、キーワードが含まれているかで判定
+                    isCorrect = userAnswer && userAnswer.includes(correctAnswer);
+                }
+                
+                return {
+                    problemId: problem.id,
+                    isCorrect: isCorrect,
+                    score: isCorrect ? 100 : 0
+                };
+            });
+        }
+
+        function generateFeedbackMessage(accuracy, completionRate) {
+            if (completionRate < 50) {
+                return "まだ解答していない問題があります。すべての問題に取り組んでみましょう。";
+            } else if (accuracy >= 80) {
+                return "素晴らしい成績です！この調子で学習を続けてください。";
+            } else if (accuracy >= 60) {
+                return "良い結果です。間違えた問題の解説を確認して、理解を深めましょう。";
+            } else {
+                return "基礎的な内容の復習をお勧めします。解説をしっかり読んで理解を深めましょう。";
+            }
+        }
+
+        function generateExplanation(problem) {
+            // 実際のプロジェクトでは、問題IDに基づいて詳細な解説を返す
+            const explanations = {
+                1: "2×2分割表の感度は、実際に陽性のサンプルのうち、正しく陽性と判定された割合を表します。計算式は：感度 = 真陽性 / (真陽性 + 偽陰性) です。",
+                2: "リスク比は、暴露群と非暴露群の発症リスクの比を表します。感度とは異なり、診断テストの性能を示す指標ではありません。",
+                3: "混同行列における感度（真陽性率）は、実際に陽性のサンプルを正しく陽性と判定する割合のことです。",
+                4: "単回帰分析では、最小二乗法を用いて回帰係数を推定します。観測値と予測値の差の二乗和が最小になるように係数を決定します。",
+                5: "決定係数R²=0.75は、従属変数の変動の75%が独立変数によって説明されることを意味します。つまり、モデルの説明力が高いことを示しています。"
+            };
+            
+            return explanations[problem.id] || "この問題の解説は準備中です。";
+        }
+    </script>
+</body>
+</html>

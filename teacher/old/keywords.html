@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>キーワード管理 - データサイエンス基礎</title>
+    <link rel="stylesheet" href="../common/daib-style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="daib-container">
+        <div class="daib-main">
+            <!-- 左サイドバー -->
+            <div class="daib-sidebar">
+                <!-- DAIBヘッダー -->
+                <div class="daib-sidebar-header">
+                    <div class="daib-header">
+                        <a href="dashboard.html">DAIB 教員</a>
+                    </div>
+                </div>
+
+                <!-- ナビゲーション -->
+                <div class="daib-nav-section" style="flex: 1; display: flex; flex-direction: column;">
+                    <div class="daib-nav-content" style="display: block; max-height: none; padding: 8px 16px 16px 16px; background: var(--daib-sidebar); flex: 1;">
+                        <a href="dashboard.html" class="nav-item">
+                            <i class="fas fa-chart-line"></i>
+                            ダッシュボード
+                        </a>
+                        <a href="keywords.html" class="nav-item active">
+                            <i class="fas fa-tags"></i>
+                            キーワード管理
+                        </a>
+                        <a href="themes.html" class="nav-item">
+                            <i class="fas fa-brain"></i>
+                            テーマ設定
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- メインコンテンツエリア -->
+            <div class="daib-content">
+                <!-- コンテンツヘッダー -->
+                <div class="daib-content-header">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <h1 class="daib-content-title">キーワード管理</h1>
+                    </div>
+                    <div class="daib-content-actions">
+                        <button onclick="addNewKeyword()" class="daib-btn daib-btn-success" style="margin-right: 12px;">
+                            <i class="fas fa-plus"></i>
+                            新規キーワード追加
+                        </button>
+                        <button onclick="saveAllKeywords()" class="daib-btn daib-btn-primary">
+                            <i class="fas fa-save"></i>
+                            すべて保存
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 学習コンテンツ -->
+                <div class="daib-learning-content">
+                    <!-- 授業・授業回選択 -->
+                    <div class="content-card" style="margin-bottom: 24px;">
+                        <h3 style="margin: 0 0 16px 0;">授業・授業回選択</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--daib-text);">授業選択</label>
+                                <select id="subject-select" class="daib-input" onchange="changeSubject()">
+                                    <option value="data-science">データサイエンス基礎</option>
+                                    <option value="data-overview">データサイエンス概論</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--daib-text);">授業回選択</label>
+                                <select id="lecture-select" class="daib-input" onchange="changeLecture()">
+                                    <option value="1">第1回</option>
+                                    <option value="2">第2回</option>
+                                    <option value="3">第3回</option>
+                                    <option value="4">第4回</option>
+                                    <option value="5">第5回</option>
+                                    <option value="6">第6回</option>
+                                    <option value="7" selected>第7回</option>
+                                    <option value="8">第8回</option>
+                                    <option value="9">第9回</option>
+                                    <option value="10">第10回</option>
+                                    <option value="11">第11回</option>
+                                    <option value="12">第12回</option>
+                                    <option value="13">第13回</option>
+                                    <option value="14">第14回</option>
+                                    <option value="15">第15回</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 講義情報 -->
+                    <div class="content-card" style="margin-bottom: 24px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h3 style="margin: 0 0 8px 0;">講義情報</h3>
+                                <div style="display: flex; align-items: center; gap: 24px; font-size: 14px; color: var(--daib-text-light);">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-book"></i>
+                                        <span id="lecture-title">データサイエンス基礎第7回</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-calendar"></i>
+                                        <span id="lecture-week">第7週</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-tags"></i>
+                                        <span><span id="keyword-count">8</span>個のキーワード</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- キーワード一覧 -->
+                    <div class="content-card" style="margin-bottom: 24px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                            <h3 style="margin: 0;">キーワード一覧</h3>
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <select id="sort-select" onchange="sortKeywords()" class="daib-input" style="width: 150px; font-size: 14px;">
+                                    <option value="order">登録順</option>
+                                    <option value="name">名前順</option>
+                                    <option value="importance">重要度順</option>
+                                </select>
+                                <button onclick="resetKeywords()" class="daib-btn daib-btn-secondary" style="font-size: 14px; padding: 8px 12px;">
+                                    <i class="fas fa-redo"></i>
+                                    リセット
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="keywords-list" style="max-height: 400px; overflow-y: auto;">
+                            <!-- キーワードリストがJSで生成される -->
+                        </div>
+                    </div>
+
+                    <!-- 一括操作 -->
+                    <div class="content-card" style="margin-bottom: 24px;">
+                        <h3 style="margin: 0 0 16px 0;">一括操作</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                            <div style="padding: 16px; border: 1px solid var(--daib-border); border-radius: 8px;">
+                                <h4 style="margin: 0 0 12px 0; font-weight: 600;">重要度一括設定</h4>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <select id="bulk-importance" class="daib-input" style="flex: 1;">
+                                        <option value="1">1 - 低</option>
+                                        <option value="2">2 - やや低</option>
+                                        <option value="3">3 - 普通</option>
+                                        <option value="4">4 - 高</option>
+                                        <option value="5" selected>5 - 非常に高</option>
+                                    </select>
+                                    <button onclick="bulkSetImportance()" class="daib-btn daib-btn-primary" style="font-size: 14px; padding: 8px 16px;">
+                                        適用
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div style="padding: 16px; border: 1px solid var(--daib-border); border-radius: 8px;">
+                                <h4 style="margin: 0 0 12px 0; font-weight: 600;">キーワードインポート</h4>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <input type="file" id="import-file" accept=".csv,.txt" style="display: none;">
+                                    <button onclick="document.getElementById('import-file').click()" class="daib-btn daib-btn-secondary" style="flex: 1; font-size: 14px;">
+                                        ファイル選択
+                                    </button>
+                                    <button onclick="importKeywords()" class="daib-btn daib-btn-success" style="font-size: 14px; padding: 8px 16px;">
+                                        インポート
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div style="padding: 16px; border: 1px solid var(--daib-border); border-radius: 8px;">
+                                <h4 style="margin: 0 0 12px 0; font-weight: 600;">キーワードエクスポート</h4>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <select id="export-format" class="daib-input" style="flex: 1;">
+                                        <option value="csv">CSV形式</option>
+                                        <option value="json">JSON形式</option>
+                                        <option value="txt">テキスト形式</option>
+                                    </select>
+                                    <button onclick="exportKeywords()" class="daib-btn daib-btn-primary" style="background: var(--daib-info); font-size: 14px; padding: 8px 16px;">
+                                        出力
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 統計情報 -->
+                    <div class="content-card">
+                        <h3 style="margin: 0 0 16px 0;">キーワード統計</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <p class="stat-card-title">総キーワード数</p>
+                                    <i class="fas fa-tags stat-card-icon"></i>
+                                </div>
+                                <p class="stat-card-value" id="total-keywords">8</p>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <p class="stat-card-title">高重要度キーワード</p>
+                                    <i class="fas fa-star stat-card-icon"></i>
+                                </div>
+                                <p class="stat-card-value" id="high-importance" style="color: var(--daib-success);">8</p>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <p class="stat-card-title">平均文字数</p>
+                                    <i class="fas fa-font stat-card-icon"></i>
+                                </div>
+                                <p class="stat-card-value" id="avg-length">12.3</p>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <p class="stat-card-title">最終更新</p>
+                                    <i class="fas fa-clock stat-card-icon"></i>
+                                </div>
+                                <p class="stat-card-value" id="last-updated" style="font-size: 18px;">今日</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- キーワード編集モーダル -->
+    <div id="edit-modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div class="content-card" style="width: 100%; max-width: 500px; margin: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                <h3 id="modal-title" style="margin: 0;">キーワード編集</h3>
+                <button onclick="closeEditModal()" style="background: none; border: none; font-size: 20px; color: var(--daib-text-light); cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">キーワード名</label>
+                <input type="text" id="edit-keyword-name" class="daib-input" placeholder="キーワード名を入力">
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">重要度</label>
+                <select id="edit-importance" class="daib-input">
+                    <option value="1">1 - 低</option>
+                    <option value="2">2 - やや低</option>
+                    <option value="3">3 - 普通</option>
+                    <option value="4">4 - 高</option>
+                    <option value="5">5 - 非常に高</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">説明</label>
+                <textarea id="edit-description" rows="3" class="daib-input daib-textarea" placeholder="キーワードの説明を入力してください..."></textarea>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button onclick="closeEditModal()" class="daib-btn daib-btn-secondary">
+                    キャンセル
+                </button>
+                <button onclick="saveKeyword()" class="daib-btn daib-btn-primary">
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../common/data.js"></script>
+    <script>
+        // グローバル変数
+        let keywordsData = [];
+        let editingIndex = -1;
+        let currentSubject = 'data-science';
+        let currentLecture = 7;
+
+        // 授業データ
+        const SUBJECTS = {
+            'data-science': {
+                name: 'データサイエンス基礎',
+                lectures: {
+                    7: {
+                        title: 'データサイエンス基礎第7回',
+                        keywords: [
+                            "2×2分割表の指標",
+                            "リスク差・リスク比・オッズ比", 
+                            "混同行列とは",
+                            "回帰分析の目的",
+                            "単回帰モデルとは",
+                            "最小二乗法による回帰係数の推定",
+                            "決定係数の解釈",
+                            "Rを用いた回帰分析"
+                        ]
+                    }
+                }
+            },
+            'data-overview': {
+                name: 'データサイエンス概論',
+                lectures: {
+                    7: {
+                        title: 'データサイエンス概論第7回',
+                        keywords: [
+                            "データ可視化の基本",
+                            "統計的推測",
+                            "機械学習の概要",
+                            "ビッグデータの活用",
+                            "データマイニング手法",
+                            "予測モデル構築",
+                            "データ前処理技術"
+                        ]
+                    }
+                }
+            }
+        };
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeKeywords();
+            renderKeywordsList();
+            updateStatistics();
+            updateLectureInfo();
+        });
+
+        // キーワード初期化
+        function initializeKeywords() {
+            const currentLectureData = SUBJECTS[currentSubject].lectures[currentLecture];
+            if (currentLectureData) {
+                keywordsData = currentLectureData.keywords.map((keyword, index) => ({
+                    id: index + 1,
+                    name: keyword,
+                    importance: 5,
+                    description: `${SUBJECTS[currentSubject].name}第${currentLecture}回のキーワード: ${keyword}`,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                }));
+            }
+        }
+
+        // 授業変更
+        function changeSubject() {
+            const subjectSelect = document.getElementById('subject-select');
+            currentSubject = subjectSelect.value;
+            initializeKeywords();
+            renderKeywordsList();
+            updateStatistics();
+            updateLectureInfo();
+        }
+
+        // 授業回変更
+        function changeLecture() {
+            const lectureSelect = document.getElementById('lecture-select');
+            currentLecture = parseInt(lectureSelect.value);
+            initializeKeywords();
+            renderKeywordsList();
+            updateStatistics();
+            updateLectureInfo();
+        }
+
+        // 講義情報更新
+        function updateLectureInfo() {
+            const lectureTitle = document.getElementById('lecture-title');
+            const lectureWeek = document.getElementById('lecture-week');
+            
+            lectureTitle.textContent = `${SUBJECTS[currentSubject].name}第${currentLecture}回`;
+            lectureWeek.textContent = `第${currentLecture}週`;
+        }
+
+        // キーワードリスト描画
+        function renderKeywordsList() {
+            const container = document.getElementById('keywords-list');
+            container.innerHTML = '';
+
+            keywordsData.forEach((keyword, index) => {
+                const item = document.createElement('div');
+                item.style.cssText = 'border: 1px solid var(--daib-border); border-radius: 8px; padding: 16px; margin-bottom: 12px; background: var(--daib-surface); transition: all 0.2s ease;';
+                item.onmouseover = () => item.style.borderColor = 'var(--daib-primary)';
+                item.onmouseout = () => item.style.borderColor = 'var(--daib-border)';
+                
+                item.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                <span style="font-size: 12px; color: var(--daib-text-light); font-family: monospace;">#${keyword.id}</span>
+                                <h4 style="margin: 0; font-weight: 600; color: var(--daib-text);">${keyword.name}</h4>
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    ${renderStars(keyword.importance)}
+                                </div>
+                                <span style="font-size: 12px; color: var(--daib-text-light);">重要度: ${keyword.importance}</span>
+                            </div>
+                            <p style="margin: 0 0 8px 0; font-size: 14px; color: var(--daib-text-light); line-height: 1.4;">${keyword.description}</p>
+                            <div style="display: flex; align-items: center; gap: 16px; font-size: 12px; color: var(--daib-text-light);">
+                                <span>作成: ${new Date(keyword.created_at).toLocaleDateString('ja-JP')}</span>
+                                <span>更新: ${new Date(keyword.updated_at).toLocaleDateString('ja-JP')}</span>
+                                <span>文字数: ${keyword.name.length}文字</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-left: 16px;">
+                            <button onclick="editKeyword(${index})" class="daib-btn daib-btn-secondary" style="font-size: 14px; padding: 8px 12px;">
+                                <i class="fas fa-edit"></i>
+                                編集
+                            </button>
+                            <button onclick="duplicateKeyword(${index})" class="daib-btn daib-btn-success" style="font-size: 14px; padding: 8px 12px;">
+                                <i class="fas fa-copy"></i>
+                                複製
+                            </button>
+                            <button onclick="deleteKeyword(${index})" class="daib-btn" style="background: var(--daib-error); color: white; font-size: 14px; padding: 8px 12px;">
+                                <i class="fas fa-trash"></i>
+                                削除
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+
+            updateKeywordCount();
+        }
+
+        // 星評価描画
+        function renderStars(importance) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= importance) {
+                    stars += '<i class="fas fa-star" style="color: #f59e0b; font-size: 14px;"></i>';
+                } else {
+                    stars += '<i class="far fa-star" style="color: var(--daib-border); font-size: 14px;"></i>';
+                }
+            }
+            return stars;
+        }
+
+        // キーワード数更新
+        function updateKeywordCount() {
+            document.getElementById('keyword-count').textContent = keywordsData.length;
+        }
+
+        // 新規キーワード追加
+        function addNewKeyword() {
+            editingIndex = -1;
+            document.getElementById('modal-title').textContent = '新規キーワード追加';
+            document.getElementById('edit-keyword-name').value = '';
+            document.getElementById('edit-importance').value = '5';
+            document.getElementById('edit-description').value = '';
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        // キーワード編集
+        function editKeyword(index) {
+            editingIndex = index;
+            const keyword = keywordsData[index];
+            document.getElementById('modal-title').textContent = 'キーワード編集';
+            document.getElementById('edit-keyword-name').value = keyword.name;
+            document.getElementById('edit-importance').value = keyword.importance;
+            document.getElementById('edit-description').value = keyword.description;
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        // モーダル閉じる
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+            editingIndex = -1;
+        }
+
+        // キーワード保存
+        function saveKeyword() {
+            const name = document.getElementById('edit-keyword-name').value.trim();
+            const importance = parseInt(document.getElementById('edit-importance').value);
+            const description = document.getElementById('edit-description').value.trim();
+
+            if (!name) {
+                alert('キーワード名を入力してください');
+                return;
+            }
+
+            if (editingIndex === -1) {
+                // 新規追加
+                const newKeyword = {
+                    id: Math.max(...keywordsData.map(k => k.id), 0) + 1,
+                    name: name,
+                    importance: importance,
+                    description: description || `${SUBJECTS[currentSubject].name}第${currentLecture}回のキーワード: ${name}`,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+                keywordsData.push(newKeyword);
+            } else {
+                // 編集
+                keywordsData[editingIndex].name = name;
+                keywordsData[editingIndex].importance = importance;
+                keywordsData[editingIndex].description = description;
+                keywordsData[editingIndex].updated_at = new Date().toISOString();
+            }
+
+            renderKeywordsList();
+            updateStatistics();
+            closeEditModal();
+        }
+
+        // キーワード複製
+        function duplicateKeyword(index) {
+            const original = keywordsData[index];
+            const duplicate = {
+                ...original,
+                id: Math.max(...keywordsData.map(k => k.id), 0) + 1,
+                name: original.name + ' (複製)',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+            keywordsData.push(duplicate);
+            renderKeywordsList();
+            updateStatistics();
+        }
+
+        // キーワード削除
+        function deleteKeyword(index) {
+            if (confirm('このキーワードを削除してもよろしいですか？')) {
+                keywordsData.splice(index, 1);
+                renderKeywordsList();
+                updateStatistics();
+            }
+        }
+
+        // キーワードソート
+        function sortKeywords() {
+            const sortType = document.getElementById('sort-select').value;
+            
+            switch (sortType) {
+                case 'name':
+                    keywordsData.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'importance':
+                    keywordsData.sort((a, b) => b.importance - a.importance);
+                    break;
+                case 'order':
+                default:
+                    keywordsData.sort((a, b) => a.id - b.id);
+                    break;
+            }
+            
+            renderKeywordsList();
+        }
+
+        // キーワードリセット
+        function resetKeywords() {
+            if (confirm('キーワードを初期状態にリセットしますか？')) {
+                initializeKeywords();
+                renderKeywordsList();
+                updateStatistics();
+            }
+        }
+
+        // 重要度一括設定
+        function bulkSetImportance() {
+            const importance = parseInt(document.getElementById('bulk-importance').value);
+            if (confirm(`すべてのキーワードの重要度を ${importance} に設定しますか？`)) {
+                keywordsData.forEach(keyword => {
+                    keyword.importance = importance;
+                    keyword.updated_at = new Date().toISOString();
+                });
+                renderKeywordsList();
+                updateStatistics();
+            }
+        }
+
+        // キーワードインポート
+        function importKeywords() {
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('ファイルを選択してください');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    const lines = content.split('\n').filter(line => line.trim());
+                    
+                    lines.forEach(line => {
+                        const keyword = line.trim();
+                        if (keyword && !keywordsData.find(k => k.name === keyword)) {
+                            keywordsData.push({
+                                id: Math.max(...keywordsData.map(k => k.id), 0) + 1,
+                                name: keyword,
+                                importance: 3,
+                                description: `インポートされたキーワード: ${keyword}`,
+                                created_at: new Date().toISOString(),
+                                updated_at: new Date().toISOString()
+                            });
+                        }
+                    });
+                    
+                    renderKeywordsList();
+                    updateStatistics();
+                    alert(`${lines.length}個のキーワードをインポートしました`);
+                } catch (error) {
+                    alert('ファイルの読み込みに失敗しました');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // キーワードエクスポート
+        function exportKeywords() {
+            const format = document.getElementById('export-format').value;
+            let content = '';
+            let filename = '';
+            let mimeType = '';
+
+            switch (format) {
+                case 'csv':
+                    content = 'ID,キーワード名,重要度,説明,作成日,更新日\n';
+                    content += keywordsData.map(k => 
+                        `${k.id},"${k.name}",${k.importance},"${k.description}","${k.created_at}","${k.updated_at}"`
+                    ).join('\n');
+                    filename = 'keywords.csv';
+                    mimeType = 'text/csv';
+                    break;
+                case 'json':
+                    content = JSON.stringify(keywordsData, null, 2);
+                    filename = 'keywords.json';
+                    mimeType = 'application/json';
+                    break;
+                case 'txt':
+                    content = keywordsData.map(k => k.name).join('\n');
+                    filename = 'keywords.txt';
+                    mimeType = 'text/plain';
+                    break;
+            }
+
+            const blob = new Blob([content], { type: mimeType + ';charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // すべて保存
+        function saveAllKeywords() {
+            // ローカルストレージに保存（実際のアプリではAPIに送信）
+            localStorage.setItem('lecture_keywords', JSON.stringify(keywordsData));
+            alert('すべてのキーワードを保存しました');
+        }
+
+        // 統計更新
+        function updateStatistics() {
+            const total = keywordsData.length;
+            const highImportance = keywordsData.filter(k => k.importance >= 4).length;
+            const avgLength = total > 0 ? (keywordsData.reduce((sum, k) => sum + k.name.length, 0) / total).toFixed(1) : 0;
+            
+            document.getElementById('total-keywords').textContent = total;
+            document.getElementById('high-importance').textContent = highImportance;
+            document.getElementById('avg-length').textContent = avgLength;
+            document.getElementById('last-updated').textContent = '今日';
+        }
+    </script>
+</body>
+</html>

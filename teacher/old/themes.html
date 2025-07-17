@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テーマ設定 - データサイエンス基礎</title>
+    <link rel="stylesheet" href="../common/daib-style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="daib-container">
+        <div class="daib-main">
+            <!-- 左サイドバー -->
+            <div class="daib-sidebar">
+                <!-- DAIBヘッダー -->
+                <div class="daib-sidebar-header">
+                    <div class="daib-header">
+                        <a href="dashboard.html">DAIB 教員</a>
+                    </div>
+                </div>
+
+                <!-- ナビゲーション -->
+                <div class="daib-nav-section" style="flex: 1; display: flex; flex-direction: column;">
+                    <div class="daib-nav-content" style="display: block; max-height: none; padding: 8px 16px 16px 16px; background: var(--daib-sidebar); flex: 1;">
+                        <a href="dashboard.html" class="nav-item">
+                            <i class="fas fa-chart-line"></i>
+                            ダッシュボード
+                        </a>
+                        <a href="keywords.html" class="nav-item">
+                            <i class="fas fa-tags"></i>
+                            キーワード管理
+                        </a>
+                        <a href="themes.html" class="nav-item active">
+                            <i class="fas fa-brain"></i>
+                            テーマ設定
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- メインコンテンツエリア -->
+            <div class="daib-content">
+                <!-- コンテンツヘッダー -->
+                <div class="daib-content-header">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <h1 class="daib-content-title">テーマ設定</h1>
+                    </div>
+                    <div class="daib-content-actions">
+                        <button onclick="handleCreate()" class="daib-btn daib-btn-primary">
+                            <i class="fas fa-plus"></i>
+                            新規テーマ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 学習コンテンツ -->
+                <div class="daib-learning-content">
+                    <!-- 説明 -->
+                    <div class="content-card" style="margin-bottom: 24px;">
+                        <h3 style="margin: 0 0 8px 0;">テーマ設定について</h3>
+                        <p style="margin: 0; color: var(--daib-text-light);">
+                            授業を通しての大きなテーマを管理・編集できます。これらのテーマは最終回のアンケートで理解度評価に使用されます。
+                        </p>
+                    </div>
+
+                    <!-- フィルター -->
+                    <div class="content-card" style="margin-bottom: 24px;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-search" style="color: var(--daib-text-light);"></i>
+                                <input
+                                    type="text"
+                                    id="search-input"
+                                    placeholder="テーマ名・説明で検索"
+                                    class="daib-input"
+                                    style="width: 250px;"
+                                    oninput="applyFilters()"
+                                />
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-filter" style="color: var(--daib-text-light);"></i>
+                                <select id="status-filter" class="daib-input" onchange="applyFilters()">
+                                    <option value="all">全ステータス</option>
+                                    <option value="active">有効</option>
+                                    <option value="inactive">無効</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- テーマ一覧 -->
+                    <div class="content-card">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                            <h3 style="margin: 0;">
+                                テーマ一覧 (<span id="theme-count">0</span>件)
+                            </h3>
+                            <p style="margin: 0; font-size: 14px; color: var(--daib-text-light);">
+                                ドラッグ&ドロップで順序を変更できます
+                            </p>
+                        </div>
+                        
+                        <div id="themes-list" style="max-height: 600px; overflow-y: auto;">
+                            <!-- テーマリストがJSで生成される -->
+                        </div>
+
+                        <div id="empty-state" style="display: none; text-align: center; padding: 40px;">
+                            <i class="fas fa-brain" style="font-size: 48px; color: var(--daib-border); margin-bottom: 16px;"></i>
+                            <h3 style="margin: 0 0 8px 0; color: var(--daib-text);">テーマが見つかりません</h3>
+                            <p style="margin: 0; color: var(--daib-text-light);">
+                                フィルター条件を変更するか、新しいテーマを作成してください。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ヘルプ -->
+                    <div class="content-card" style="background: rgba(2, 132, 199, 0.05); border: 1px solid rgba(2, 132, 199, 0.2); margin-top: 24px;">
+                        <div style="display: flex; align-items: flex-start; gap: 16px;">
+                            <i class="fas fa-info-circle" style="color: var(--daib-info); font-size: 24px; margin-top: 4px;"></i>
+                            <div>
+                                <h4 style="margin: 0 0 8px 0; color: var(--daib-info);">テーマ設定について</h4>
+                                <div style="font-size: 14px; color: var(--daib-info); line-height: 1.5;">
+                                    <p style="margin: 0 0 8px 0;">• テーマは授業を通しての大きな学習目標を表します</p>
+                                    <p style="margin: 0 0 8px 0;">• 最終回のアンケートでこれらのテーマについて理解度を評価します</p>
+                                    <p style="margin: 0 0 8px 0;">• 順序はテーマの重要度や教育課程での出現順序を表します</p>
+                                    <p style="margin: 0;">• 無効にしたテーマは最終回アンケートから除外されます</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- テーマ編集モーダル -->
+    <div id="edit-modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div class="content-card" style="width: 100%; max-width: 600px; margin: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                <h3 id="modal-title" style="margin: 0;">テーマ編集</h3>
+                <button onclick="handleCancel()" style="background: none; border: none; font-size: 20px; color: var(--daib-text-light); cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">
+                        テーマ名 <span style="color: var(--daib-error);">*</span>
+                    </label>
+                    <input type="text" id="edit-theme-name" class="daib-input" placeholder="テーマ名を入力">
+                </div>
+                
+                <div>
+                    <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">順序</label>
+                    <input type="number" id="edit-order" class="daib-input" min="1">
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px;">説明</label>
+                <textarea id="edit-description" rows="4" class="daib-input daib-textarea" placeholder="テーマの説明を入力"></textarea>
+            </div>
+            
+            <div style="margin-bottom: 24px;">
+                <label style="display: flex; align-items: center; gap: 8px;">
+                    <input
+                        type="checkbox"
+                        id="edit-is-active"
+                        style="width: 16px; height: 16px;"
+                    />
+                    <span style="font-size: 14px;">有効</span>
+                </label>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button onclick="handleCancel()" class="daib-btn daib-btn-secondary">
+                    キャンセル
+                </button>
+                <button onclick="handleSave()" class="daib-btn daib-btn-primary">
+                    <i class="fas fa-save"></i>
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../common/data.js"></script>
+    <script>
+        // グローバル変数
+        let themes = [];
+        let filteredThemes = [];
+        let editingTheme = null;
+        let isCreating = false;
+
+        // データサイエンス基礎の10大テーマ（デフォルト）
+        const defaultThemes = [
+            {
+                name: 'ビッグデータ／デジタル社会',
+                description: '現代社会における大量データの処理必要性'
+            },
+            {
+                name: 'データ分析設計',
+                description: '分析目的の設定、標本調査、実験計画'
+            },
+            {
+                name: 'データ探索（EDA）',
+                description: '要約統計、集計、クロス集計、分割表解析'
+            },
+            {
+                name: '回帰分析',
+                description: '単回帰、最小二乗法、重回帰分析／多変量解析'
+            },
+            {
+                name: '次元削減',
+                description: '主成分分析（PCA）'
+            },
+            {
+                name: '分類手法',
+                description: 'ロジスティック回帰と最尤推定'
+            },
+            {
+                name: '時系列解析',
+                description: '時間とともに変化するデータの解析'
+            },
+            {
+                name: 'クラスタリング',
+                description: 'クラスタ分析とデンドログラムによる構造把握'
+            },
+            {
+                name: 'データ可視化',
+                description: '目的に応じた各種グラフ・図表化'
+            },
+            {
+                name: '統計基礎（R使用）',
+                description: 'Rによる実データ解析と統計的手法の実践的習得'
+            }
+        ];
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadThemes();
+        });
+
+        // テーマ読み込み
+        function loadThemes() {
+            // デモデータを設定
+            themes = defaultThemes.map((theme, index) => ({
+                id: index + 1,
+                theme_name: theme.name,
+                description: theme.description,
+                order_index: index + 1,
+                is_active: true,
+                created_at: new Date().toISOString()
+            }));
+            
+            applyFilters();
+        }
+
+        // フィルター適用
+        function applyFilters() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const status = document.getElementById('status-filter').value;
+
+            filteredThemes = themes.filter(theme => {
+                // 検索フィルター
+                if (search && !theme.theme_name.toLowerCase().includes(search) && 
+                    !theme.description.toLowerCase().includes(search)) return false;
+                
+                // ステータスフィルター
+                if (status === 'active' && !theme.is_active) return false;
+                if (status === 'inactive' && theme.is_active) return false;
+                
+                return true;
+            }).sort((a, b) => a.order_index - b.order_index);
+
+            renderThemes();
+        }
+
+        // テーマ描画
+        function renderThemes() {
+            const container = document.getElementById('themes-list');
+            const emptyState = document.getElementById('empty-state');
+            const themeCount = document.getElementById('theme-count');
+
+            container.innerHTML = '';
+            themeCount.textContent = filteredThemes.length;
+
+            if (filteredThemes.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'block';
+            emptyState.style.display = 'none';
+
+            filteredThemes.forEach((theme, index) => {
+                const item = document.createElement('div');
+                item.style.cssText = 'border: 1px solid var(--daib-border); border-radius: 8px; padding: 20px; margin-bottom: 16px; background: var(--daib-surface); transition: all 0.2s ease;';
+                item.onmouseover = () => item.style.borderColor = 'var(--daib-primary)';
+                item.onmouseout = () => item.style.borderColor = 'var(--daib-border)';
+                
+                item.innerHTML = `
+                    <div style="display: flex; align-items: flex-start; gap: 16px;">
+                        <!-- ドラッグハンドル -->
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-grip-vertical" style="color: var(--daib-text-light); cursor: move;"></i>
+                            <span style="font-size: 14px; font-family: monospace; color: var(--daib-text-light); width: 24px;">${theme.order_index}</span>
+                        </div>
+                        
+                        <!-- テーマ情報 -->
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                <i class="fas fa-brain" style="color: var(--daib-primary);"></i>
+                                <h4 style="margin: 0; font-weight: 600; color: var(--daib-text);">${theme.theme_name}</h4>
+                                <span style="padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; ${
+                                    theme.is_active 
+                                        ? 'background: rgba(5, 150, 105, 0.1); color: var(--daib-success);' 
+                                        : 'background: var(--daib-background); color: var(--daib-text-light);'
+                                }">
+                                    ${theme.is_active ? '有効' : '無効'}
+                                </span>
+                            </div>
+                            
+                            <p style="margin: 0 0 12px 0; font-size: 14px; color: var(--daib-text-light); line-height: 1.5;">
+                                ${theme.description}
+                            </p>
+                            
+                            <div style="display: flex; align-items: center; gap: 16px; font-size: 12px; color: var(--daib-text-light);">
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <i class="fas fa-calendar" style="font-size: 10px;"></i>
+                                    <span>作成日: ${new Date(theme.created_at).toLocaleDateString('ja-JP')}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- アクションボタン -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button onclick="handleEdit(${theme.id})" class="daib-btn daib-btn-secondary" style="font-size: 14px; padding: 8px 12px;">
+                                <i class="fas fa-edit"></i>
+                                編集
+                            </button>
+                            <button onclick="handleDelete(${theme.id})" class="daib-btn" style="background: var(--daib-error); color: white; font-size: 14px; padding: 8px 12px;">
+                                <i class="fas fa-trash"></i>
+                                削除
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // 新規作成
+        function handleCreate() {
+            editingTheme = {
+                theme_name: '',
+                description: '',
+                order_index: themes.length + 1,
+                is_active: true
+            };
+            isCreating = true;
+            
+            document.getElementById('modal-title').textContent = '新規テーマ作成';
+            document.getElementById('edit-theme-name').value = '';
+            document.getElementById('edit-description').value = '';
+            document.getElementById('edit-order').value = themes.length + 1;
+            document.getElementById('edit-is-active').checked = true;
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        // 編集
+        function handleEdit(themeId) {
+            const theme = themes.find(t => t.id === themeId);
+            if (!theme) return;
+
+            editingTheme = { ...theme };
+            isCreating = false;
+            
+            document.getElementById('modal-title').textContent = 'テーマ編集';
+            document.getElementById('edit-theme-name').value = theme.theme_name;
+            document.getElementById('edit-description').value = theme.description;
+            document.getElementById('edit-order').value = theme.order_index;
+            document.getElementById('edit-is-active').checked = theme.is_active;
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        // 保存
+        function handleSave() {
+            const name = document.getElementById('edit-theme-name').value.trim();
+            const description = document.getElementById('edit-description').value.trim();
+            const order = parseInt(document.getElementById('edit-order').value) || 1;
+            const isActive = document.getElementById('edit-is-active').checked;
+
+            if (!name) {
+                alert('テーマ名を入力してください');
+                return;
+            }
+
+            if (isCreating) {
+                // 新規作成
+                const newTheme = {
+                    id: Math.max(...themes.map(t => t.id), 0) + 1,
+                    theme_name: name,
+                    description: description,
+                    order_index: order,
+                    is_active: isActive,
+                    created_at: new Date().toISOString()
+                };
+                themes.push(newTheme);
+                showMessage('テーマを作成しました', 'success');
+            } else {
+                // 編集
+                const theme = themes.find(t => t.id === editingTheme.id);
+                if (theme) {
+                    theme.theme_name = name;
+                    theme.description = description;
+                    theme.order_index = order;
+                    theme.is_active = isActive;
+                }
+                showMessage('テーマを更新しました', 'success');
+            }
+
+            handleCancel();
+            applyFilters();
+        }
+
+        // 削除
+        function handleDelete(themeId) {
+            if (!confirm('このテーマを削除しますか？')) return;
+
+            themes = themes.filter(t => t.id !== themeId);
+            showMessage('テーマを削除しました', 'success');
+            applyFilters();
+        }
+
+        // キャンセル
+        function handleCancel() {
+            document.getElementById('edit-modal').style.display = 'none';
+            editingTheme = null;
+            isCreating = false;
+        }
+
+        // メッセージ表示
+        function showMessage(message, type = 'info') {
+            // 簡易的なメッセージ表示
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 10000;
+                padding: 12px 20px; border-radius: 8px; color: white; font-weight: 500;
+                background: ${type === 'success' ? 'var(--daib-success)' : 'var(--daib-info)'};
+                animation: slideIn 0.3s ease;
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        // アニメーション用CSS追加
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

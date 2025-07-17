@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン - 個別最適化学習システム</title>
+    <link rel="stylesheet" href="global.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+        
+        .login-body {
+            padding: 2rem;
+        }
+        
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .role-button {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .role-button:hover {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+        
+        .role-button.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        .role-info {
+            flex: 1;
+        }
+        
+        .role-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .role-desc {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .role-icon {
+            font-size: 2rem;
+            margin-left: 1rem;
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+        
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+        
+        .login-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .demo-info {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .demo-title {
+            font-weight: 600;
+            color: #15803d;
+            margin-bottom: 0.5rem;
+        }
+        
+        .demo-text {
+            color: #166534;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">🎓</div>
+            <h1 class="text-2xl font-bold">個別最適化学習システム</h1>
+            <p class="text-blue-100 mt-2">データサイエンス基礎第7回</p>
+        </div>
+        
+        <div class="login-body">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">ログインユーザーを選択してください</h2>
+            
+            <div class="role-selection">
+                <button class="role-button" onclick="selectRole('teacher')" id="teacher-button">
+                    <div class="role-info">
+                        <div class="role-title">教員</div>
+                        <div class="role-desc">ダッシュボード・学生管理・キーワード管理</div>
+                    </div>
+                    <div class="role-icon">👨‍🏫</div>
+                </button>
+                
+                <button class="role-button" onclick="selectRole('student')" id="student-button">
+                    <div class="role-info">
+                        <div class="role-title">学生</div>
+                        <div class="role-desc">理解度アンケート・問題解答・結果確認</div>
+                    </div>
+                    <div class="role-icon">👨‍🎓</div>
+                </button>
+            </div>
+            
+            <button class="login-button" onclick="login()" id="login-btn" disabled>
+                ログイン
+            </button>
+            
+            <div class="demo-info">
+                <div class="demo-title">📌 デモ版について</div>
+                <div class="demo-text">
+                    • このシステムはデモ版です<br>
+                    • データはブラウザ内に保存されます<br>
+                    • 実際のサーバーとは接続していません<br>
+                    • ゼロ環境依存で動作します
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        let selectedRole = null;
+
+        // 役割選択
+        function selectRole(role) {
+            selectedRole = role;
+            
+            // 全ボタンの選択状態をリセット
+            document.querySelectorAll('.role-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // 選択されたボタンをハイライト
+            document.getElementById(role + '-button').classList.add('selected');
+            
+            // ログインボタンを有効化
+            document.getElementById('login-btn').disabled = false;
+        }
+
+        // ログイン処理
+        function login() {
+            if (!selectedRole) {
+                alert('ユーザー種別を選択してください');
+                return;
+            }
+
+            // ローディング状態
+            const loginBtn = document.getElementById('login-btn');
+            const originalText = loginBtn.textContent;
+            loginBtn.textContent = 'ログイン中...';
+            loginBtn.disabled = true;
+
+            // ユーザー情報をローカルストレージに保存
+            const userInfo = {
+                role: selectedRole,
+                name: selectedRole === 'teacher' ? 'データサイエンス教員' : '学生',
+                loginTime: new Date().toISOString(),
+                sessionId: generateSessionId()
+            };
+
+            localStorage.setItem(selectedRole + '_user', JSON.stringify(userInfo));
+            localStorage.setItem('auth_token', userInfo.sessionId);
+
+            // 模擬ログイン遅延
+            setTimeout(() => {
+                // 適切な画面に遷移
+                if (selectedRole === 'teacher') {
+                    window.location.href = '../teacher/dashboard.html';
+                } else {
+                    window.location.href = '../student/dashboard.html';
+                }
+            }, 1500);
+        }
+
+        // セッションID生成
+        function generateSessionId() {
+            return 'session_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+        }
+
+        // 初期化時に既存のログイン状態をチェック
+        document.addEventListener('DOMContentLoaded', function() {
+            const teacherUser = localStorage.getItem('teacher_user');
+            const studentUser = localStorage.getItem('student_user');
+            const authToken = localStorage.getItem('auth_token');
+
+            // 既にログインしている場合は自動遷移の選択肢を表示
+            if (authToken && (teacherUser || studentUser)) {
+                showAutoLoginOption(teacherUser ? 'teacher' : 'student');
+            }
+        });
+
+        // 自動ログインオプション表示
+        function showAutoLoginOption(role) {
+            const userInfo = JSON.parse(localStorage.getItem(role + '_user'));
+            const loginTime = new Date(userInfo.loginTime);
+            const now = new Date();
+            const hoursSinceLogin = (now - loginTime) / (1000 * 60 * 60);
+
+            // 24時間以内のログインの場合のみ自動ログインを提案
+            if (hoursSinceLogin < 24) {
+                const roleName = role === 'teacher' ? '教員' : '学生';
+                if (confirm(`前回のログイン: ${roleName}\n${loginTime.toLocaleString('ja-JP')}\n\n続行しますか？`)) {
+                    if (role === 'teacher') {
+                        window.location.href = '../teacher/dashboard.html';
+                    } else {
+                        window.location.href = '../student/dashboard.html';
+                    }
+                }
+            }
+        }
+
+        // キーボードショートカット
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '1') {
+                selectRole('teacher');
+            } else if (e.key === '2') {
+                selectRole('student');
+            } else if (e.key === 'Enter' && selectedRole) {
+                login();
+            }
+        });
+    </script>
+</body>
+</html>

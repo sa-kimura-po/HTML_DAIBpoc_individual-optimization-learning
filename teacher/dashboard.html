@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAIB 教員 - 個別最適化学習システム</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../common/daib-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="daib-container">
+        <div class="daib-main">
+            <!-- 左サイドバー -->
+            <div class="daib-sidebar">
+                <!-- DAIBヘッダー -->
+                <div class="daib-sidebar-header">
+                    <div class="daib-header">
+                        <a href="dashboard.html">DAIB 教員</a>
+                    </div>
+                </div>
+
+                <!-- メニュー切り替えボタン -->
+                <div class="daib-nav-section">
+                    <div style="background: var(--daib-surface); padding: 8px; border-bottom: 1px solid var(--daib-border);">
+                        <div class="menu-toggle-buttons">
+                            <button id="daib-learning-toggle" class="menu-toggle-btn" onclick="toggleMenuMode('learning')">
+                                DAIB学習
+                            </button>
+                            <button id="learning-review-toggle" class="menu-toggle-btn active" onclick="toggleMenuMode('review')">
+                                授業振り返り
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DAIB学習メニュー -->
+                <div id="daib-learning-menu" class="menu-content">
+                    <!-- DAIB学習セクション -->
+                    <div class="daib-nav-section">
+                        <div class="daib-nav-content" style="display: block; max-height: none; padding: 8px 16px 16px 16px; background: var(--daib-sidebar);">
+                            <a href="#" class="nav-item" onclick="TEACHER_STATE.setMode('daib', 'upload')">
+                                <i class="fas fa-upload"></i>
+                                講義資料・動画アップロード
+                            </a>
+                            <a href="#" class="nav-item" onclick="TEACHER_STATE.setMode('chat', 'general')">
+                                <i class="fas fa-comments"></i>
+                                DAIBチャット
+                            </a>
+                            <a href="#" class="nav-item" onclick="TEACHER_STATE.setMode('chat', 'data-science')">
+                                <i class="fas fa-chart-bar"></i>
+                                データサイエンス基礎
+                            </a>
+                            <a href="#" class="nav-item" onclick="TEACHER_STATE.setMode('chat', 'data-overview')">
+                                <i class="fas fa-database"></i>
+                                データサイエンス概論
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 授業振り返りメニュー -->
+                <div id="learning-review-menu" class="menu-content active">
+                    <div class="daib-nav-section" style="flex: 1; display: flex; flex-direction: column;">
+                        <div class="daib-nav-content" style="display: block; max-height: none; padding: 8px 16px 16px 16px; background: var(--daib-sidebar); flex: 1;">
+                            <a href="#" class="nav-item active" onclick="TEACHER_STATE.setMode('review', 'dashboard')">
+                                <i class="fas fa-chart-line"></i>
+                                教員ダッシュボード
+                            </a>
+                            <a href="#" class="nav-item" onclick="TEACHER_STATE.setMode('review', 'keyword-management')">
+                                <i class="fas fa-tags"></i>
+                                授業回キーワード管理
+                            </a>
+                            <a href="#" class="nav-item" onclick="TEACHER_STATE.setMode('review', 'theme-setting')">
+                                <i class="fas fa-brain"></i>
+                                授業テーマ設定
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- メインコンテンツエリア -->
+            <div class="daib-content">
+                <!-- DAIB学習コンテンツ -->
+                <div id="daib-area" class="content-area" style="display: none;">
+                    <!-- チャット形式のレイアウト -->
+                    <div class="daib-chat-area" style="display: flex; flex-direction: row; width: 100%;">
+                        <!-- メインチャットエリア -->
+                        <div style="flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--daib-border);">
+                            <!-- DAIBチャット -->
+                            <div id="general-chat" class="chat-content">
+                                <div class="daib-chat-messages" style="flex: 1; padding: 16px; overflow-y: auto; background: var(--daib-background); height: calc(100vh - 200px);">
+                                    <!-- DAIBウェルカムメッセージ -->
+                                    <div style="padding: 20px; border-left: 4px solid var(--daib-primary); background: rgba(102, 51, 153, 0.05); margin-bottom: 16px;">
+                                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                                            <div style="width: 40px; height: 40px; background: var(--daib-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-robot" style="color: white; font-size: 18px;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; color: var(--daib-primary); font-size: 16px;">DAIB 教員アシスタント</div>
+                                                <div style="font-size: 12px; color: #666;">学習支援AI</div>
+                                            </div>
+                                        </div>
+                                        <div style="line-height: 1.6;">
+                                            <p style="margin: 0 0 12px 0;">こんにちは！DAIB教員アシスタントです。授業準備や学習支援に関するご質問にお答えします。</p>
+                                            <div style="font-size: 14px; color: var(--daib-text-light);">
+                                                <strong>🔹 できること：</strong><br>
+                                                • 授業内容に関する質問・相談<br>
+                                                • 教材作成のサポート<br>
+                                                • 学習指導のアドバイス<br>
+                                                • システム使用方法の案内
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- チャット入力欄 -->
+                                <div class="daib-chat-input" style="padding: 16px; border-top: 1px solid var(--daib-border); background: var(--daib-surface);">
+                                    <div style="position: relative;">
+                                        <textarea id="chat-input" placeholder="メッセージを入力してください..." 
+                                                 style="width: 100%; height: 60px; resize: none; padding: 12px 50px 12px 12px; border: 1px solid var(--daib-border); border-radius: 8px; font-family: inherit;"></textarea>
+                                        <button onclick="sendMessage()" class="daib-btn daib-btn-primary" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); padding: 8px 12px;">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- データサイエンス基礎チャット -->
+                            <div id="data-science-chat" class="chat-content" style="display: none;">
+                                <div class="daib-chat-messages" style="flex: 1; padding: 16px; overflow-y: auto; background: var(--daib-background); height: calc(100vh - 200px);">
+                                    <!-- 専用ウェルカムメッセージ -->
+                                    <div style="padding: 20px; border-left: 4px solid var(--daib-primary); background: rgba(102, 51, 153, 0.05); margin-bottom: 16px;">
+                                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                                            <div style="width: 40px; height: 40px; background: var(--daib-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-chart-bar" style="color: white; font-size: 18px;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; color: var(--daib-primary); font-size: 16px;">DAIB</div>
+                                                <div style="font-size: 12px; color: #666;">データサイエンス基礎</div>
+                                            </div>
+                                        </div>
+                                        <div style="line-height: 1.6;">
+                                            <p style="margin: 0 0 12px 0;">データサイエンス基礎の授業準備をサポートします。右のメニューから機能を選択してください。</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 機能選択後のコンテンツエリア -->
+                                    <div id="chat-feature-content">
+                                        <!-- 機能選択後のコンテンツが表示される -->
+                                    </div>
+                                </div>
+                                
+                                <!-- 専用入力欄 -->
+                                <div class="daib-chat-input" style="padding: 16px; border-top: 1px solid var(--daib-border); background: var(--daib-surface);">
+                                    <div style="position: relative;">
+                                        <textarea id="chat-input-ds" placeholder="データサイエンス基礎について質問してください..." 
+                                                 style="width: 100%; height: 60px; resize: none; padding: 12px 50px 12px 12px; border: 1px solid var(--daib-border); border-radius: 8px; font-family: inherit;"></textarea>
+                                        <button onclick="sendMessage('data-science')" class="daib-btn daib-btn-primary" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); padding: 8px 12px;">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- データサイエンス概論チャット -->
+                            <div id="data-overview-chat" class="chat-content" style="display: none;">
+                                <div class="daib-chat-messages" style="flex: 1; padding: 16px; overflow-y: auto; background: var(--daib-background); height: calc(100vh - 200px);">
+                                    <!-- 専用ウェルカムメッセージ -->
+                                    <div style="padding: 20px; border-left: 4px solid var(--daib-primary); background: rgba(102, 51, 153, 0.05); margin-bottom: 16px;">
+                                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                                            <div style="width: 40px; height: 40px; background: var(--daib-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-database" style="color: white; font-size: 18px;"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; color: var(--daib-primary); font-size: 16px;">DAIB</div>
+                                                <div style="font-size: 12px; color: #666;">データサイエンス概論</div>
+                                            </div>
+                                        </div>
+                                        <div style="line-height: 1.6;">
+                                            <p style="margin: 0 0 12px 0;">データサイエンス概論の授業準備をサポートします。右のメニューから機能を選択してください。</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 機能選択後のコンテンツエリア -->
+                                    <div id="chat-feature-content-overview">
+                                        <!-- 機能選択後のコンテンツが表示される -->
+                                    </div>
+                                </div>
+                                
+                                <!-- 専用入力欄 -->
+                                <div class="daib-chat-input" style="padding: 16px; border-top: 1px solid var(--daib-border); background: var(--daib-surface);">
+                                    <div style="position: relative;">
+                                        <textarea id="chat-input-do" placeholder="データサイエンス概論について質問してください..." 
+                                                 style="width: 100%; height: 60px; resize: none; padding: 12px 50px 12px 12px; border: 1px solid var(--daib-border); border-radius: 8px; font-family: inherit;"></textarea>
+                                        <button onclick="sendMessage('data-overview')" class="daib-btn daib-btn-primary" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); padding: 8px 12px;">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右サイドバー（科目選択時のみ表示） -->
+                        <div id="chat-right-menu" style="width: 350px; background: var(--daib-surface); display: none;">
+                            <div style="padding: 16px; border-bottom: 1px solid var(--daib-border);">
+                                <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">メニュー ></h3>
+                                <p style="margin: 0; font-size: 12px; color: var(--daib-text-light);">機能を選択してください</p>
+                            </div>
+                            
+                            <div style="padding: 16px; overflow-y: auto; height: calc(100vh - 200px);">
+                                <!-- 授業回選択 -->
+                                <div style="margin-bottom: 24px;">
+                                    <label style="display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--daib-text);">授業回</label>
+                                    <select class="daib-input" id="chat-week-select" onchange="changeChatWeek()">
+                                        <option value="1">第1回</option>
+                                        <option value="2">第2回</option>
+                                        <option value="3">第3回</option>
+                                        <option value="4">第4回</option>
+                                        <option value="5">第5回</option>
+                                        <option value="6">第6回</option>
+                                        <option value="7" selected>第7回</option>
+                                        <option value="8">第8回</option>
+                                        <option value="9">第9回</option>
+                                        <option value="10">第10回</option>
+                                        <option value="11">第11回</option>
+                                        <option value="12">第12回</option>
+                                        <option value="13">第13回</option>
+                                        <option value="14">第14回</option>
+                                        <option value="15">第15回</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- メニュー項目 -->
+                                <div style="display: flex; flex-direction: column; gap: 20px;">
+                                    <!-- 設問作成セクション -->
+                                    <div>
+                                        <h4 style="margin: 0 0 12px 0; font-weight: 600; color: var(--daib-text); font-size: 14px; border-bottom: 1px solid var(--daib-border); padding-bottom: 4px;">▼ 設問作成</h4>
+                                        <div style="padding-left: 12px; display: flex; flex-direction: column; gap: 8px;">
+                                            <a href="#" onclick="showChatFeature('fill-blank')" style="font-size: 13px; color: var(--daib-text-light); text-decoration: none; hover:color: var(--daib-primary);">・穴埋め式</a>
+                                            <a href="#" onclick="showChatFeature('multiple-choice')" style="font-size: 13px; color: var(--daib-text-light); text-decoration: none;">・選択式</a>
+                                            <a href="#" onclick="showChatFeature('free-response')" style="font-size: 13px; color: var(--daib-text-light); text-decoration: none;">・自由記述式</a>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 講義資料キーワードセクション -->
+                                    <div>
+                                        <h4 style="margin: 0 0 12px 0; font-weight: 600; color: var(--daib-text); font-size: 14px; border-bottom: 1px solid var(--daib-border); padding-bottom: 4px;">▼ 講義資料キーワード</h4>
+                                        <div style="padding-left: 12px; display: flex; flex-direction: column; gap: 8px;">
+                                            <a href="#" onclick="showChatFeature('keyword-analysis')" style="font-size: 13px; color: var(--daib-text-light); text-decoration: none;">・2×2分割表の指標</a>
+                                            <a href="#" onclick="showChatFeature('keyword-risk')" style="font-size: 13px; color: var(--daib-text-light); text-decoration: none;">・リスク差・リスク比・オッズ比</a>
+                                            <a href="#" onclick="showChatFeature('keyword-matrix')" style="font-size: 13px; color: var(--daib-text-light); text-decoration: none;">・混同行列とは</a>
+                                            <a href="#" onclick="showChatFeature('keyword-regression')" style="font-size: 13px; color: var(--daib-text-light); text-decoration: none;">・回帰分析の目的</a>
+                                            <a href="#" onclick="showChatFeature('keyword-model')" style="font-size: 13px; color: var(--daib-text-light); text-decoration: none;">・単回帰モデルとは</a>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 参考資料キーワードセクション -->
+                                    <div>
+                                        <h4 style="margin: 0 0 12px 0; font-weight: 600; color: var(--daib-text); font-size: 14px; border-bottom: 1px solid var(--daib-border); padding-bottom: 4px;">▼ 参考資料キーワード</h4>
+                                        <div style="padding-left: 12px;">
+                                            <p style="margin: 0; font-size: 13px; color: var(--daib-text-light);">参考資料の主要キーワードを表示</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 動画検索セクション -->
+                                    <div>
+                                        <h4 style="margin: 0 0 12px 0; font-weight: 600; color: var(--daib-text); font-size: 14px; border-bottom: 1px solid var(--daib-border); padding-bottom: 4px;">▼ 動画検索</h4>
+                                        <div style="padding-left: 12px;">
+                                            <a href="#" onclick="showChatFeature('video-search')" style="font-size: 13px; color: var(--daib-text-light); text-decoration: none;">・講義動画をキーワードで検索</a>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- スライド作成セクション -->
+                                    <div>
+                                        <h4 style="margin: 0 0 12px 0; font-weight: 600; color: var(--daib-text); font-size: 14px; border-bottom: 1px solid var(--daib-border); padding-bottom: 4px;">▼ スライド作成</h4>
+                                        <div style="padding-left: 12px;">
+                                            <a href="#" onclick="showChatFeature('slide-create')" style="font-size: 13px; color: var(--daib-text-light); text-decoration: none;">・授業スライドの自動生成</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 講義資料・動画アップロード（チャット外） -->
+                    <div id="upload-content" class="daib-content-section" style="display: none;">
+                        <div class="daib-content-header">
+                            <h1 class="daib-content-title">講義資料・動画アップロード</h1>
+                            <div class="daib-content-actions">
+                                <button onclick="uploadFiles()" class="daib-btn daib-btn-primary">
+                                    <i class="fas fa-plus"></i>
+                                    新規アップロード
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="daib-learning-content">
+                            <!-- アップロード領域 -->
+                            <div class="content-card">
+                                <h3 style="margin-bottom: 16px;">ファイルアップロード</h3>
+                                <div class="upload-area" style="border: 2px dashed var(--daib-border); border-radius: 8px; padding: 40px; text-align: center; background: var(--daib-surface);">
+                                    <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--daib-primary); margin-bottom: 16px;"></i>
+                                    <p style="margin-bottom: 16px; color: var(--daib-text-light);">PowerAppsファイル、動画ファイルをドラッグ&ドロップまたはクリックしてアップロード</p>
+                                    <button class="daib-btn daib-btn-secondary">ファイルを選択</button>
+                                </div>
+                            </div>
+
+                            <!-- アップロード済みファイル一覧 -->
+                            <div class="content-card">
+                                <h3 style="margin-bottom: 16px;">アップロード済みファイル</h3>
+                                <div class="file-list">
+                                    <div class="file-item" style="display: flex; align-items: center; padding: 12px; border: 1px solid var(--daib-border); border-radius: 6px; margin-bottom: 8px;">
+                                        <i class="fas fa-file-powerpoint" style="color: #d04a37; margin-right: 12px;"></i>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 500;">第7回_データサイエンス基礎.pptx</div>
+                                            <div style="font-size: 12px; color: var(--daib-text-light);">アップロード日: 2025-07-15 14:30</div>
+                                        </div>
+                                        <button class="daib-btn daib-btn-danger" style="padding: 4px 8px; font-size: 12px;">削除</button>
+                                    </div>
+                                    <div class="file-item" style="display: flex; align-items: center; padding: 12px; border: 1px solid var(--daib-border); border-radius: 6px; margin-bottom: 8px;">
+                                        <i class="fas fa-video" style="color: #1976d2; margin-right: 12px;"></i>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 500;">回帰分析解説動画.mp4</div>
+                                            <div style="font-size: 12px; color: var(--daib-text-light);">アップロード日: 2025-07-15 14:25</div>
+                                        </div>
+                                        <button class="daib-btn daib-btn-danger" style="padding: 4px 8px; font-size: 12px;">削除</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 授業振り返りコンテンツ -->
+                <div id="review-area" class="content-area">
+                    <!-- 共通ヘッダー -->
+                    <div class="daib-content-header">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <h1 class="daib-content-title" id="review-page-title">教員ダッシュボード</h1>
+                            <div>
+                                <label style="font-size: 12px; color: #666; margin-right: 8px;">授業選択:</label>
+                                <select class="daib-input" style="width: 200px; font-size: 14px;" id="review-subject-select" onchange="changeReviewSubject()">
+                                    <option value="data-science">データサイエンス基礎</option>
+                                    <option value="data-overview">データサイエンス概論</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; color: #666; margin-right: 8px;">講義回:</label>
+                                <select class="daib-input" style="width: 120px; font-size: 14px;" id="review-week-select" onchange="changeReviewWeek()">
+                                    <option value="1">第1回</option>
+                                    <option value="2">第2回</option>
+                                    <option value="3">第3回</option>
+                                    <option value="4">第4回</option>
+                                    <option value="5">第5回</option>
+                                    <option value="6">第6回</option>
+                                    <option value="7" selected>第7回</option>
+                                    <option value="8">第8回</option>
+                                    <option value="9">第9回</option>
+                                    <option value="10">第10回</option>
+                                    <option value="11">第11回</option>
+                                    <option value="12">第12回</option>
+                                    <option value="13">第13回</option>
+                                    <option value="14">第14回</option>
+                                    <option value="15">第15回</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="daib-content-actions" id="review-actions">
+                            <button onclick="generateReport()" class="daib-btn daib-btn-primary">
+                                <i class="fas fa-download"></i>
+                                レポート生成
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 教員ダッシュボード -->
+                    <div id="dashboard-content" class="daib-content-section">
+
+                        <div class="daib-learning-content">
+                            <!-- AI総合評価 -->
+                            <div class="content-card" style="background: linear-gradient(135deg, #f0f9f5, #e6f3ff); border: 1px solid var(--daib-primary); margin-bottom: 24px;">
+                                <div style="display: flex; align-items: center; gap: 16px;">
+                                    <div style="width: 60px; height: 60px; background: var(--daib-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-robot" style="color: white; font-size: 24px;"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <h3 style="margin: 0 0 8px 0; color: var(--daib-primary); font-weight: 600;">AI総合評価</h3>
+                                        <p style="margin: 0; font-size: 16px; line-height: 1.5; color: var(--daib-text);">
+                                            第7回の学習状況は<strong>良好</strong>です。キーワード平均理解度73.2%と順調な進捗を示しています。
+                                            特に「回帰分析の目的」の理解度が高く、「2×2分割表の指標」で若干の理解不足が見られます。
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 統計カード -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                                <div class="content-card">
+                                    <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-users" style="color: var(--daib-primary);"></i>
+                                        受講者数
+                                    </h3>
+                                    <div style="font-size: 2rem; font-weight: bold; color: var(--daib-primary);">42名</div>
+                                    <div style="font-size: 14px; color: var(--daib-text-light); margin-top: 8px;">アンケート回答者: 38名 (90.5%)</div>
+                                </div>
+                                <div class="content-card">
+                                    <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-chart-line" style="color: var(--daib-success);"></i>
+                                        平均理解度
+                                    </h3>
+                                    <div style="font-size: 2rem; font-weight: bold; color: var(--daib-success);">73.2%</div>
+                                    <div style="font-size: 14px; color: var(--daib-text-light); margin-top: 8px;">前回比: +5.3%</div>
+                                </div>
+                                <div class="content-card">
+                                    <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-question-circle" style="color: var(--daib-warning);"></i>
+                                        生成問題数
+                                    </h3>
+                                    <div style="font-size: 2rem; font-weight: bold; color: var(--daib-warning);">186問</div>
+                                    <div style="font-size: 14px; color: var(--daib-text-light); margin-top: 8px;">平均回答時間: 4.2分</div>
+                                </div>
+                            </div>
+
+                            <!-- キーワード理解度分析 -->
+                            <div class="content-card" style="margin-bottom: 24px;">
+                                <h3 style="margin-bottom: 16px;">キーワード理解度分析</h3>
+                                <canvas id="keywordChart" width="400" height="200"></canvas>
+                            </div>
+
+                            <!-- 学生一覧 -->
+                            <div class="content-card">
+                                <h3 style="margin-bottom: 16px;">学生一覧</h3>
+                                <div class="table-container">
+                                    <table style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background: var(--daib-surface);">
+                                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid var(--daib-border);">学生ID</th>
+                                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid var(--daib-border);">氏名</th>
+                                                <th style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">理解度</th>
+                                                <th style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">問題数</th>
+                                                <th style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">状態</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="padding: 12px; border-bottom: 1px solid var(--daib-border);">ST001</td>
+                                                <td style="padding: 12px; border-bottom: 1px solid var(--daib-border);">山田太郎</td>
+                                                <td style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">78%</td>
+                                                <td style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">5問</td>
+                                                <td style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">
+                                                    <span style="background: var(--daib-success); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">完了</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 12px; border-bottom: 1px solid var(--daib-border);">ST002</td>
+                                                <td style="padding: 12px; border-bottom: 1px solid var(--daib-border);">佐藤花子</td>
+                                                <td style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">85%</td>
+                                                <td style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">4問</td>
+                                                <td style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">
+                                                    <span style="background: var(--daib-success); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">完了</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 12px; border-bottom: 1px solid var(--daib-border);">ST003</td>
+                                                <td style="padding: 12px; border-bottom: 1px solid var(--daib-border);">田中一郎</td>
+                                                <td style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">65%</td>
+                                                <td style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">6問</td>
+                                                <td style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">
+                                                    <span style="background: var(--daib-warning); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">進行中</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 授業回キーワード管理 -->
+                    <div id="keyword-management-content" class="daib-content-section" style="display: none;">
+                        <div class="daib-learning-content">
+                            <!-- 講義情報 -->
+                            <div class="content-card" style="margin-bottom: 24px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <div>
+                                        <h3 style="margin: 0 0 8px 0;">講義情報</h3>
+                                        <div style="display: flex; align-items: center; gap: 24px; font-size: 14px; color: var(--daib-text-light);">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <i class="fas fa-book"></i>
+                                                <span id="lecture-title">データサイエンス基礎第7回</span>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <i class="fas fa-calendar"></i>
+                                                <span id="lecture-week">第7週</span>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <i class="fas fa-tags"></i>
+                                                <span><span id="keyword-count">8</span>個のキーワード</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 12px;">
+                                        <button onclick="addNewKeyword()" class="daib-btn daib-btn-success">
+                                            <i class="fas fa-plus"></i>
+                                            新規キーワード追加
+                                        </button>
+                                        <button onclick="saveAllKeywords()" class="daib-btn daib-btn-primary">
+                                            <i class="fas fa-save"></i>
+                                            すべて保存
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- キーワード一覧 -->
+                            <div class="content-card" style="margin-bottom: 24px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                                    <h3 style="margin: 0;">キーワード一覧</h3>
+                                    <div style="display: flex; align-items: center; gap: 16px;">
+                                        <select id="sort-select" onchange="sortKeywords()" class="daib-input" style="width: 150px; font-size: 14px;">
+                                            <option value="order">登録順</option>
+                                            <option value="name">名前順</option>
+                                            <option value="importance">重要度順</option>
+                                        </select>
+                                        <button onclick="resetKeywords()" class="daib-btn daib-btn-secondary" style="font-size: 14px; padding: 8px 12px;">
+                                            <i class="fas fa-redo"></i>
+                                            リセット
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="keywords-list" style="max-height: 400px; overflow-y: auto;">
+                                    <!-- キーワードリスト -->
+                                    <div class="keyword-item" style="border: 1px solid var(--daib-border); border-radius: 8px; padding: 16px; margin-bottom: 12px; background: var(--daib-surface);">
+                                        <div style="display: flex; align-items: start; gap: 16px;">
+                                            <div style="flex: 1;">
+                                                <input type="text" value="2×2分割表の指標" class="daib-input" style="font-weight: 600; margin-bottom: 8px;">
+                                                <textarea placeholder="キーワードの説明を入力..." class="daib-input" style="min-height: 60px; margin-bottom: 12px;">感度、特異度、精度などの評価指標について学習します。</textarea>
+                                                <div style="display: flex; gap: 16px; align-items: center;">
+                                                    <div>
+                                                        <label style="font-size: 12px; color: var(--daib-text-light);">重要度:</label>
+                                                        <select class="daib-input" style="width: 100px; font-size: 14px;">
+                                                            <option value="1">1 - 低</option>
+                                                            <option value="2">2 - やや低</option>
+                                                            <option value="3" selected>3 - 中</option>
+                                                            <option value="4">4 - やや高</option>
+                                                            <option value="5">5 - 高</option>
+                                                        </select>
+                                                    </div>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <input type="checkbox" id="keyword1-active" checked>
+                                                        <label for="keyword1-active" style="font-size: 14px;">有効</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                <button class="daib-btn daib-btn-secondary" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-grip-vertical"></i>
+                                                </button>
+                                                <button class="daib-btn daib-btn-danger" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="keyword-item" style="border: 1px solid var(--daib-border); border-radius: 8px; padding: 16px; margin-bottom: 12px; background: var(--daib-surface);">
+                                        <div style="display: flex; align-items: start; gap: 16px;">
+                                            <div style="flex: 1;">
+                                                <input type="text" value="リスク差・リスク比・オッズ比" class="daib-input" style="font-weight: 600; margin-bottom: 8px;">
+                                                <textarea placeholder="キーワードの説明を入力..." class="daib-input" style="min-height: 60px; margin-bottom: 12px;">疫学研究における関連性の指標について学習します。</textarea>
+                                                <div style="display: flex; gap: 16px; align-items: center;">
+                                                    <div>
+                                                        <label style="font-size: 12px; color: var(--daib-text-light);">重要度:</label>
+                                                        <select class="daib-input" style="width: 100px; font-size: 14px;">
+                                                            <option value="1">1 - 低</option>
+                                                            <option value="2">2 - やや低</option>
+                                                            <option value="3">3 - 中</option>
+                                                            <option value="4" selected>4 - やや高</option>
+                                                            <option value="5">5 - 高</option>
+                                                        </select>
+                                                    </div>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <input type="checkbox" id="keyword2-active" checked>
+                                                        <label for="keyword2-active" style="font-size: 14px;">有効</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                <button class="daib-btn daib-btn-secondary" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-grip-vertical"></i>
+                                                </button>
+                                                <button class="daib-btn daib-btn-danger" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="keyword-item" style="border: 1px solid var(--daib-border); border-radius: 8px; padding: 16px; margin-bottom: 12px; background: var(--daib-surface);">
+                                        <div style="display: flex; align-items: start; gap: 16px;">
+                                            <div style="flex: 1;">
+                                                <input type="text" value="混同行列とは" class="daib-input" style="font-weight: 600; margin-bottom: 8px;">
+                                                <textarea placeholder="キーワードの説明を入力..." class="daib-input" style="min-height: 60px; margin-bottom: 12px;">分類モデルの性能評価に使用される表について学習します。</textarea>
+                                                <div style="display: flex; gap: 16px; align-items: center;">
+                                                    <div>
+                                                        <label style="font-size: 12px; color: var(--daib-text-light);">重要度:</label>
+                                                        <select class="daib-input" style="width: 100px; font-size: 14px;">
+                                                            <option value="1">1 - 低</option>
+                                                            <option value="2">2 - やや低</option>
+                                                            <option value="3" selected>3 - 中</option>
+                                                            <option value="4">4 - やや高</option>
+                                                            <option value="5">5 - 高</option>
+                                                        </select>
+                                                    </div>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <input type="checkbox" id="keyword3-active" checked>
+                                                        <label for="keyword3-active" style="font-size: 14px;">有効</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                <button class="daib-btn daib-btn-secondary" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-grip-vertical"></i>
+                                                </button>
+                                                <button class="daib-btn daib-btn-danger" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 一括操作 -->
+                            <div class="content-card">
+                                <h3 style="margin: 0 0 16px 0;">一括操作</h3>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                                    <div style="padding: 16px; border: 1px solid var(--daib-border); border-radius: 8px;">
+                                        <h4 style="margin: 0 0 12px 0; font-weight: 600;">重要度一括設定</h4>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <select id="bulk-importance" class="daib-input" style="flex: 1;">
+                                                <option value="1">1 - 低</option>
+                                                <option value="2">2 - やや低</option>
+                                                <option value="3">3 - 中</option>
+                                                <option value="4">4 - やや高</option>
+                                                <option value="5">5 - 高</option>
+                                            </select>
+                                            <button onclick="bulkSetImportance()" class="daib-btn daib-btn-secondary">適用</button>
+                                        </div>
+                                    </div>
+                                    <div style="padding: 16px; border: 1px solid var(--daib-border); border-radius: 8px;">
+                                        <h4 style="margin: 0 0 12px 0; font-weight: 600;">状態一括設定</h4>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <select id="bulk-status" class="daib-input" style="flex: 1;">
+                                                <option value="active">有効</option>
+                                                <option value="inactive">無効</option>
+                                            </select>
+                                            <button onclick="bulkSetStatus()" class="daib-btn daib-btn-secondary">適用</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 授業テーマ設定 -->
+                    <div id="theme-setting-content" class="daib-content-section" style="display: none;">
+                        <div class="daib-learning-content">
+                            <!-- 説明 -->
+                            <div class="content-card" style="margin-bottom: 24px;">
+                                <h3 style="margin: 0 0 8px 0;">テーマ設定について</h3>
+                                <p style="margin: 0; color: var(--daib-text-light);">
+                                    授業を通しての大きなテーマを管理・編集できます。これらのテーマは最終回のアンケートで理解度評価に使用されます。
+                                </p>
+                                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                                    <button onclick="addNewTheme()" class="daib-btn daib-btn-primary">
+                                        <i class="fas fa-plus"></i>
+                                        新規テーマ
+                                    </button>
+                                    <button onclick="saveAllThemes()" class="daib-btn daib-btn-success">
+                                        <i class="fas fa-save"></i>
+                                        すべて保存
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- フィルター -->
+                            <div class="content-card" style="margin-bottom: 24px;">
+                                <div style="display: flex; align-items: center; gap: 16px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-search" style="color: var(--daib-text-light);"></i>
+                                        <input
+                                            type="text"
+                                            id="theme-search-input"
+                                            placeholder="テーマ名・説明で検索"
+                                            class="daib-input"
+                                            style="width: 250px;"
+                                            oninput="filterThemes()"
+                                        />
+                                    </div>
+                                    
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-filter" style="color: var(--daib-text-light);"></i>
+                                        <select id="theme-status-filter" class="daib-input" onchange="filterThemes()">
+                                            <option value="all">全ステータス</option>
+                                            <option value="active">有効</option>
+                                            <option value="inactive">無効</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- テーマ一覧 -->
+                            <div class="content-card">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                                    <h3 style="margin: 0;">
+                                        テーマ一覧 (<span id="theme-count">3</span>件)
+                                    </h3>
+                                    <p style="margin: 0; font-size: 14px; color: var(--daib-text-light);">
+                                        ドラッグ&ドロップで順序を変更できます
+                                    </p>
+                                </div>
+                                
+                                <div id="themes-list" style="max-height: 600px; overflow-y: auto;">
+                                    <!-- テーマアイテム1 -->
+                                    <div class="theme-item" style="border: 1px solid var(--daib-border); border-radius: 8px; padding: 16px; margin-bottom: 12px; background: var(--daib-surface);">
+                                        <div style="display: flex; align-items: start; gap: 16px;">
+                                            <div style="flex: 1;">
+                                                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 12px;">
+                                                    <div>
+                                                        <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">テーマ名</label>
+                                                        <input type="text" value="データ分析の基礎" class="daib-input">
+                                                    </div>
+                                                    <div>
+                                                        <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">カテゴリー</label>
+                                                        <select class="daib-input">
+                                                            <option value="foundation" selected>基礎</option>
+                                                            <option value="application">応用</option>
+                                                            <option value="practical">実践</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div style="margin-bottom: 12px;">
+                                                    <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">説明</label>
+                                                    <textarea class="daib-input" style="min-height: 60px;">データの収集、整理、分析の基本的な手法について学習します。統計的思考力を身につけることを目標とします。</textarea>
+                                                </div>
+                                                <div style="display: flex; gap: 16px; align-items: center;">
+                                                    <div>
+                                                        <label style="font-size: 12px; color: var(--daib-text-light);">重要度:</label>
+                                                        <select class="daib-input" style="width: 100px; font-size: 14px;">
+                                                            <option value="1">1 - 低</option>
+                                                            <option value="2">2 - やや低</option>
+                                                            <option value="3">3 - 中</option>
+                                                            <option value="4">4 - やや高</option>
+                                                            <option value="5" selected>5 - 高</option>
+                                                        </select>
+                                                    </div>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <input type="checkbox" id="theme1-active" checked>
+                                                        <label for="theme1-active" style="font-size: 14px;">有効</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                <button class="daib-btn daib-btn-secondary" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-grip-vertical"></i>
+                                                </button>
+                                                <button class="daib-btn daib-btn-danger" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- テーマアイテム2 -->
+                                    <div class="theme-item" style="border: 1px solid var(--daib-border); border-radius: 8px; padding: 16px; margin-bottom: 12px; background: var(--daib-surface);">
+                                        <div style="display: flex; align-items: start; gap: 16px;">
+                                            <div style="flex: 1;">
+                                                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 12px;">
+                                                    <div>
+                                                        <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">テーマ名</label>
+                                                        <input type="text" value="統計的推測と検定" class="daib-input">
+                                                    </div>
+                                                    <div>
+                                                        <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">カテゴリー</label>
+                                                        <select class="daib-input">
+                                                            <option value="foundation">基礎</option>
+                                                            <option value="application" selected>応用</option>
+                                                            <option value="practical">実践</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div style="margin-bottom: 12px;">
+                                                    <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">説明</label>
+                                                    <textarea class="daib-input" style="min-height: 60px;">統計的仮説検定、信頼区間、推定などの統計的推測の手法について学習します。</textarea>
+                                                </div>
+                                                <div style="display: flex; gap: 16px; align-items: center;">
+                                                    <div>
+                                                        <label style="font-size: 12px; color: var(--daib-text-light);">重要度:</label>
+                                                        <select class="daib-input" style="width: 100px; font-size: 14px;">
+                                                            <option value="1">1 - 低</option>
+                                                            <option value="2">2 - やや低</option>
+                                                            <option value="3">3 - 中</option>
+                                                            <option value="4" selected>4 - やや高</option>
+                                                            <option value="5">5 - 高</option>
+                                                        </select>
+                                                    </div>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <input type="checkbox" id="theme2-active" checked>
+                                                        <label for="theme2-active" style="font-size: 14px;">有効</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                <button class="daib-btn daib-btn-secondary" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-grip-vertical"></i>
+                                                </button>
+                                                <button class="daib-btn daib-btn-danger" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- テーマアイテム3 -->
+                                    <div class="theme-item" style="border: 1px solid var(--daib-border); border-radius: 8px; padding: 16px; margin-bottom: 12px; background: var(--daib-surface);">
+                                        <div style="display: flex; align-items: start; gap: 16px;">
+                                            <div style="flex: 1;">
+                                                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 12px;">
+                                                    <div>
+                                                        <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">テーマ名</label>
+                                                        <input type="text" value="機械学習とデータマイニング" class="daib-input">
+                                                    </div>
+                                                    <div>
+                                                        <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">カテゴリー</label>
+                                                        <select class="daib-input">
+                                                            <option value="foundation">基礎</option>
+                                                            <option value="application">応用</option>
+                                                            <option value="practical" selected>実践</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div style="margin-bottom: 12px;">
+                                                    <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">説明</label>
+                                                    <textarea class="daib-input" style="min-height: 60px;">機械学習アルゴリズム、パターン認識、データマイニング手法の理論と実装について学習します。</textarea>
+                                                </div>
+                                                <div style="display: flex; gap: 16px; align-items: center;">
+                                                    <div>
+                                                        <label style="font-size: 12px; color: var(--daib-text-light);">重要度:</label>
+                                                        <select class="daib-input" style="width: 100px; font-size: 14px;">
+                                                            <option value="1">1 - 低</option>
+                                                            <option value="2">2 - やや低</option>
+                                                            <option value="3" selected>3 - 中</option>
+                                                            <option value="4">4 - やや高</option>
+                                                            <option value="5">5 - 高</option>
+                                                        </select>
+                                                    </div>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <input type="checkbox" id="theme3-active" checked>
+                                                        <label for="theme3-active" style="font-size: 14px;">有効</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                <button class="daib-btn daib-btn-secondary" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-grip-vertical"></i>
+                                                </button>
+                                                <button class="daib-btn daib-btn-danger" style="padding: 4px 8px; font-size: 12px;">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="empty-theme-state" style="display: none; text-align: center; padding: 40px;">
+                                    <i class="fas fa-brain" style="font-size: 48px; color: var(--daib-border); margin-bottom: 16px;"></i>
+                                    <h3 style="margin: 0 0 8px 0; color: var(--daib-text);">テーマが見つかりません</h3>
+                                    <p style="margin: 0; color: var(--daib-text-light);">
+                                        フィルター条件を変更するか、新しいテーマを作成してください。
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- ヘルプ -->
+                            <div class="content-card" style="background: rgba(2, 132, 199, 0.05); border: 1px solid rgba(2, 132, 199, 0.2); margin-top: 24px;">
+                                <div style="display: flex; align-items: flex-start; gap: 16px;">
+                                    <i class="fas fa-info-circle" style="color: var(--daib-info); font-size: 24px; margin-top: 4px;"></i>
+                                    <div>
+                                        <h4 style="margin: 0 0 8px 0; color: var(--daib-info);">テーマ設定について</h4>
+                                        <div style="font-size: 14px; color: var(--daib-info); line-height: 1.5;">
+                                            <p style="margin: 0 0 8px 0;">• テーマは授業を通しての大きな学習目標を表します</p>
+                                            <p style="margin: 0 0 8px 0;">• 最終回のアンケートでこれらのテーマについて理解度を評価します</p>
+                                            <p style="margin: 0 0 8px 0;">• 順序はテーマの重要度や教育課程での出現順序を表します</p>
+                                            <p style="margin: 0;">• 無効にしたテーマは最終回アンケートから除外されます</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../common/data.js"></script>
+    <script>
+        // 教員用状態管理
+        const TEACHER_STATE = {
+            currentMode: 'review', // 'daib' or 'review'
+            currentDAIBFunction: 'upload', // 'upload', 'keywords', 'problems', 'search', 'chat'
+            currentReviewFunction: 'dashboard', // 'dashboard', 'keyword-management', 'theme-setting'
+            currentSubject: 'data-science',
+            currentWeek: 7,
+            currentChatType: 'general', // 'general', 'data-science', 'data-overview'
+            
+            setMode: function(mode, func) {
+                console.log('=== setMode called ===');
+                console.log('Parameters:', mode, func);
+                console.log('Before - currentMode:', this.currentMode, 'currentDAIBFunction:', this.currentDAIBFunction);
+                
+                // チャット系の場合は特別処理
+                if (mode === 'chat') {
+                    this.currentMode = 'daib';
+                    this.currentDAIBFunction = 'chat';
+                    this.currentChatType = func;
+                    this.updateChatFunction('chat');
+                } else {
+                    this.currentMode = mode;
+                    if (mode === 'daib') {
+                        this.currentDAIBFunction = func;
+                        if (func !== 'upload') {
+                            this.updateChatFunction(func);
+                        }
+                    } else {
+                        this.currentReviewFunction = func;
+                        this.updateReviewPageTitle(func);
+                    }
+                }
+                console.log('After - currentMode:', this.currentMode, 'currentDAIBFunction:', this.currentDAIBFunction, 'currentChatType:', this.currentChatType);
+                this.updateUI();
+            },
+            
+            updateChatFunction: function(func) {
+                console.log('updateChatFunction called with:', func);
+                const titleElement = document.getElementById('chat-function-title');
+                const subtitleElement = document.getElementById('chat-function-subtitle');
+                
+                console.log('Title element found:', !!titleElement);
+                console.log('Subtitle element found:', !!subtitleElement);
+                
+                // 要素が存在しない場合は処理をスキップ
+                if (!titleElement || !subtitleElement) {
+                    console.warn('Chat function title/subtitle elements not found, skipping update');
+                    return;
+                }
+                
+                switch(func) {
+                    case 'keywords':
+                        titleElement.textContent = 'キーワード解説';
+                        subtitleElement.textContent = '授業資料からキーワードを抽出・管理';
+                        break;
+                    case 'problems':
+                        titleElement.textContent = '設問作成';
+                        subtitleElement.textContent = 'キーワードベースの問題を自動生成';
+                        break;
+                    case 'search':
+                        titleElement.textContent = '動画検索';
+                        subtitleElement.textContent = '講義動画をキーワードで検索';
+                        break;
+                    case 'chat':
+                        switch(this.currentChatType) {
+                            case 'general':
+                                titleElement.textContent = 'DAIBチャット';
+                                subtitleElement.textContent = '汎用的な質問・相談';
+                                break;
+                            case 'data-science':
+                                titleElement.textContent = 'データサイエンス基礎';
+                                subtitleElement.textContent = 'データサイエンス基礎に関する質問';
+                                break;
+                            case 'data-overview':
+                                titleElement.textContent = 'データサイエンス概論';
+                                subtitleElement.textContent = 'データサイエンス概論に関する質問';
+                                break;
+                        }
+                        break;
+                }
+                console.log('Chat function updated successfully');
+            },
+            
+            updateReviewPageTitle: function(func) {
+                console.log('updateReviewPageTitle called with:', func);
+                const titleElement = document.getElementById('review-page-title');
+                const actionsElement = document.getElementById('review-actions');
+                
+                console.log('Review title element found:', !!titleElement);
+                console.log('Review actions element found:', !!actionsElement);
+                
+                // 要素が存在しない場合は処理をスキップ
+                if (!titleElement || !actionsElement) {
+                    console.warn('Review page title/actions elements not found, skipping update');
+                    return;
+                }
+                
+                switch(func) {
+                    case 'dashboard':
+                        titleElement.textContent = '教員ダッシュボード';
+                        actionsElement.innerHTML = `
+                            <button onclick="generateReport()" class="daib-btn daib-btn-primary">
+                                <i class="fas fa-download"></i>
+                                レポート生成
+                            </button>
+                        `;
+                        break;
+                    case 'keyword-management':
+                        titleElement.textContent = '授業回キーワード管理';
+                        actionsElement.innerHTML = `
+                            <button onclick="addNewKeyword()" class="daib-btn daib-btn-success" style="margin-right: 12px;">
+                                <i class="fas fa-plus"></i>
+                                新規キーワード追加
+                            </button>
+                            <button onclick="saveAllKeywords()" class="daib-btn daib-btn-primary">
+                                <i class="fas fa-save"></i>
+                                すべて保存
+                            </button>
+                        `;
+                        break;
+                    case 'theme-setting':
+                        titleElement.textContent = '授業テーマ設定';
+                        actionsElement.innerHTML = `
+                            <button onclick="addNewTheme()" class="daib-btn daib-btn-primary" style="margin-right: 12px;">
+                                <i class="fas fa-plus"></i>
+                                新規テーマ
+                            </button>
+                            <button onclick="saveAllThemes()" class="daib-btn daib-btn-success">
+                                <i class="fas fa-save"></i>
+                                すべて保存
+                            </button>
+                        `;
+                        break;
+                }
+                console.log('Review page title updated successfully');
+            },
+            
+            updateUI: function() {
+                console.log('=== updateUI called ===');
+                console.log('Current mode:', this.currentMode, 'DAIB function:', this.currentDAIBFunction);
+                
+                // メニューの表示切り替え
+                this.updateMenuUI();
+                
+                // コンテンツエリアの表示切り替え
+                const daibArea = document.getElementById('daib-area');
+                const reviewArea = document.getElementById('review-area');
+                
+                console.log('DOM elements - daibArea:', !!daibArea, 'reviewArea:', !!reviewArea);
+                
+                if (this.currentMode === 'daib') {
+                    console.log('Switching to DAIB mode');
+                    if (daibArea) daibArea.style.display = 'block';
+                    if (reviewArea) reviewArea.style.display = 'none';
+                    this.showDAIBContent();
+                } else {
+                    console.log('Switching to Review mode');
+                    if (daibArea) daibArea.style.display = 'none';
+                    if (reviewArea) reviewArea.style.display = 'block';
+                    this.showReviewContent();
+                }
+                
+                // ナビゲーションのアクティブ状態更新
+                this.updateNavigation();
+                console.log('=== updateUI completed ===');
+            },
+            
+            updateMenuUI: function() {
+                // メニュートグルボタンの状態更新
+                document.querySelectorAll('.menu-toggle-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                const activeToggle = document.getElementById(
+                    this.currentMode === 'daib' ? 'daib-learning-toggle' : 'learning-review-toggle'
+                );
+                if (activeToggle) {
+                    activeToggle.classList.add('active');
+                }
+                
+                // メニューコンテンツの表示切り替え
+                document.querySelectorAll('.menu-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                const activeMenu = document.getElementById(
+                    this.currentMode === 'daib' ? 'daib-learning-menu' : 'learning-review-menu'
+                );
+                if (activeMenu) {
+                    activeMenu.classList.add('active');
+                }
+            },
+            
+            showDAIBContent: function() {
+                console.log('=== showDAIBContent called ===');
+                console.log('Function:', this.currentDAIBFunction, 'ChatType:', this.currentChatType);
+                
+                // DAIBモードでのコンテンツ表示制御
+                const chatArea = document.querySelector('#daib-area .daib-chat-area');
+                const uploadContent = document.getElementById('upload-content');
+                const rightMenu = document.getElementById('chat-right-menu');
+                
+                console.log('Elements found:');
+                console.log('- chatArea:', !!chatArea, chatArea ? 'exists' : 'missing');
+                console.log('- uploadContent:', !!uploadContent, uploadContent ? 'exists' : 'missing');
+                console.log('- rightMenu:', !!rightMenu, rightMenu ? 'exists' : 'missing');
+                
+                if (this.currentDAIBFunction === 'upload') {
+                    // アップロード機能の場合
+                    console.log('>>> Switching to UPLOAD mode');
+                    if (chatArea) {
+                        chatArea.style.display = 'none';
+                        console.log('- Hidden chat area');
+                    }
+                    if (uploadContent) {
+                        uploadContent.style.display = 'block';
+                        console.log('- Shown upload content');
+                    } else {
+                        console.error('- Upload content element not found!');
+                    }
+                    if (rightMenu) {
+                        rightMenu.style.display = 'none';
+                        console.log('- Hidden right menu');
+                    }
+                } else {
+                    // チャット機能の場合
+                    console.log('>>> Switching to CHAT mode');
+                    if (chatArea) {
+                        chatArea.style.display = 'flex';
+                        console.log('- Shown chat area');
+                    } else {
+                        console.error('- Chat area element not found!');
+                    }
+                    if (uploadContent) {
+                        uploadContent.style.display = 'none';
+                        console.log('- Hidden upload content');
+                    }
+                    
+                    // 右サイドバーの表示制御
+                    if (this.currentDAIBFunction === 'chat' && this.currentChatType === 'general') {
+                        console.log('>>> General chat mode - hiding right menu');
+                        if (rightMenu) rightMenu.style.display = 'none';
+                    } else if (this.currentDAIBFunction === 'chat') {
+                        console.log('>>> Subject chat mode - showing right menu');
+                        if (rightMenu) rightMenu.style.display = 'block';
+                    } else {
+                        console.log('>>> Other mode - hiding right menu');
+                        if (rightMenu) rightMenu.style.display = 'none';
+                    }
+                    
+                    // チャットコンテンツの表示切り替え
+                    document.querySelectorAll('.chat-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    if (this.currentDAIBFunction === 'chat') {
+                        const chatContentId = this.currentChatType === 'general' ? 'general-chat' : 
+                                            this.currentChatType === 'data-science' ? 'data-science-chat' : 'data-overview-chat';
+                        console.log('Showing chat content:', chatContentId);
+                        const chatContent = document.getElementById(chatContentId);
+                        if (chatContent) {
+                            chatContent.style.display = 'block';
+                            console.log('- Successfully shown chat content:', chatContentId);
+                        } else {
+                            console.error('- Chat content element not found:', chatContentId);
+                        }
+                    }
+                }
+                console.log('=== showDAIBContent completed ===');
+            },
+            
+            showReviewContent: function() {
+                // すべての振り返りコンテンツを非表示
+                document.querySelectorAll('#review-area .daib-content-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                // 現在の機能のコンテンツを表示
+                const currentContent = document.getElementById(this.currentReviewFunction + '-content');
+                if (currentContent) {
+                    currentContent.style.display = 'block';
+                }
+            },
+            
+            updateNavigation: function() {
+                // すべてのナビゲーション項目からアクティブクラスを削除
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // 現在のモードに応じてアクティブ項目を設定
+                let selector;
+                if (this.currentMode === 'daib') {
+                    if (this.currentDAIBFunction === 'chat') {
+                        // チャット系の場合
+                        selector = `[onclick="TEACHER_STATE.setMode('chat', '${this.currentChatType}')"]`;
+                    } else {
+                        // 通常のDAIB機能の場合
+                        selector = `[onclick="TEACHER_STATE.setMode('daib', '${this.currentDAIBFunction}')"]`;
+                    }
+                } else {
+                    // 授業振り返りの場合
+                    selector = `[onclick="TEACHER_STATE.setMode('review', '${this.currentReviewFunction}')"]`;
+                }
+                    
+                const currentNavItem = document.querySelector(selector);
+                if (currentNavItem) {
+                    currentNavItem.classList.add('active');
+                }
+                
+                // 右サイドバーのアクティブ状態も更新（DAIB学習モードの場合）
+                if (this.currentMode === 'daib' && this.currentDAIBFunction !== 'upload' && this.currentDAIBFunction !== 'chat') {
+                    const sidebarItems = document.querySelectorAll('.daib-chat-sidebar .nav-item');
+                    sidebarItems.forEach(item => item.classList.remove('active'));
+                    
+                    const sidebarSelector = `[onclick="TEACHER_STATE.setMode('daib', '${this.currentDAIBFunction}')"]`;
+                    const activeSidebarItem = document.querySelector('.daib-chat-sidebar ' + sidebarSelector);
+                    if (activeSidebarItem) {
+                        activeSidebarItem.classList.add('active');
+                    }
+                }
+            }
+        };
+
+        // メニュー切り替え関数
+        function toggleMenuMode(mode) {
+            console.log('=== toggleMenuMode called ===');
+            console.log('Mode parameter:', mode);
+            if (mode === 'learning') {
+                console.log('Switching to DAIB learning mode');
+                TEACHER_STATE.setMode('daib', 'upload');
+            } else {
+                console.log('Switching to review mode');
+                TEACHER_STATE.setMode('review', 'dashboard');
+            }
+            console.log('=== toggleMenuMode completed ===');
+        }
+
+        // 機能別関数
+        function uploadFiles() {
+            alert('ファイルアップロード機能を実装予定');
+        }
+
+        function generateReport() {
+            alert('レポート生成機能を実装予定');
+        }
+
+        function sendMessage(type) {
+            let input, message;
+            if (type === 'data-science') {
+                input = document.getElementById('chat-input-ds');
+            } else if (type === 'data-overview') {
+                input = document.getElementById('chat-input-do');
+            } else {
+                input = document.getElementById('chat-input');
+            }
+            
+            message = input.value.trim();
+            if (message) {
+                // チャットメッセージ送信処理
+                alert('チャット機能は実装予定です: ' + message);
+                input.value = '';
+            }
+        }
+
+        function changeChatWeek() {
+            const select = document.getElementById('chat-week-select');
+            console.log('Chat week changed to:', select.value);
+            // 週選択に応じたコンテンツ更新処理
+        }
+
+        function showChatFeature(feature) {
+            const contentId = TEACHER_STATE.currentChatType === 'data-science' ? 
+                             'chat-feature-content' : 'chat-feature-content-overview';
+            const container = document.getElementById(contentId);
+            
+            // 機能別のコンテンツを表示
+            const featureContent = {
+                'fill-blank': {
+                    title: '穴埋め式問題作成',
+                    icon: 'fas fa-edit',
+                    content: '穴埋め式問題の作成機能です。キーワードを基に自動生成します。'
+                },
+                'multiple-choice': {
+                    title: '選択式問題作成',
+                    icon: 'fas fa-list-ul',
+                    content: '選択式問題の作成機能です。'
+                },
+                'free-response': {
+                    title: '自由記述式問題作成',
+                    icon: 'fas fa-pen',
+                    content: '自由記述式問題の作成機能です。'
+                },
+                'keyword-analysis': {
+                    title: '2×2分割表の指標',
+                    icon: 'fas fa-table',
+                    content: '2×2分割表の指標に関する詳細な解説と教材を提供します。'
+                },
+                'keyword-risk': {
+                    title: 'リスク差・リスク比・オッズ比',
+                    icon: 'fas fa-balance-scale',
+                    content: 'リスク差・リスク比・オッズ比の解説と計算方法を提供します。'
+                },
+                'keyword-matrix': {
+                    title: '混同行列とは',
+                    icon: 'fas fa-th',
+                    content: '混同行列の概念と活用方法について解説します。'
+                },
+                'keyword-regression': {
+                    title: '回帰分析の目的',
+                    icon: 'fas fa-chart-line',
+                    content: '回帰分析の目的と手法について詳しく解説します。'
+                },
+                'keyword-model': {
+                    title: '単回帰モデルとは',
+                    icon: 'fas fa-function',
+                    content: '単回帰モデルの基本概念と実装方法を説明します。'
+                },
+                'video-search': {
+                    title: '動画検索',
+                    icon: 'fas fa-video',
+                    content: '講義動画をキーワードで検索できます。'
+                },
+                'slide-create': {
+                    title: 'スライド作成',
+                    icon: 'fas fa-presentation',
+                    content: '授業スライドを自動生成します。テーマやキーワードを指定してください。'
+                }
+            };
+            
+            if (featureContent[feature]) {
+                const content = featureContent[feature];
+                container.innerHTML = `
+                    <div style="padding: 20px; border: 1px solid var(--daib-border); border-radius: 8px; background: white; margin: 16px 0;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                            <div style="width: 32px; height: 32px; background: var(--daib-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="${content.icon}" style="color: white; font-size: 14px;"></i>
+                            </div>
+                            <h4 style="margin: 0; color: var(--daib-primary);">${content.title}</h4>
+                        </div>
+                        <p style="margin: 0; line-height: 1.6;">${content.content}</p>
+                        <div style="margin-top: 16px;">
+                            <button class="daib-btn daib-btn-primary" onclick="alert('${content.title}機能は実装予定です')">
+                                開始する
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function changeReviewSubject() {
+            const select = document.getElementById('review-subject-select');
+            TEACHER_STATE.currentSubject = select.value;
+            // データ更新処理
+            console.log('Subject changed to:', select.value);
+        }
+
+        function changeReviewWeek() {
+            const select = document.getElementById('review-week-select');
+            TEACHER_STATE.currentWeek = parseInt(select.value);
+            // データ更新処理
+            console.log('Week changed to:', select.value);
+        }
+
+        // キーワード管理関数
+        function addNewKeyword() {
+            alert('新規キーワード追加機能を実装予定');
+        }
+
+        function saveAllKeywords() {
+            alert('キーワード保存機能を実装予定');
+        }
+
+        function sortKeywords() {
+            const select = document.getElementById('sort-select');
+            alert('キーワードソート機能を実装予定: ' + select.value);
+        }
+
+        function resetKeywords() {
+            alert('キーワードリセット機能を実装予定');
+        }
+
+        function bulkSetImportance() {
+            const select = document.getElementById('bulk-importance');
+            alert('一括重要度設定機能を実装予定: ' + select.value);
+        }
+
+        function bulkSetStatus() {
+            const select = document.getElementById('bulk-status');
+            alert('一括状態設定機能を実装予定: ' + select.value);
+        }
+
+        // テーマ設定関数
+        function addNewTheme() {
+            alert('新規テーマ追加機能を実装予定');
+        }
+
+        function saveAllThemes() {
+            alert('テーマ保存機能を実装予定');
+        }
+
+        function filterThemes() {
+            const searchInput = document.getElementById('theme-search-input');
+            const statusFilter = document.getElementById('theme-status-filter');
+            alert('テーマフィルター機能を実装予定');
+        }
+
+        // チャート初期化
+        function initializeChart() {
+            const ctx = document.getElementById('keywordChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['2×2分割表', 'リスク比・オッズ比', '混同行列', '回帰分析目的', '単回帰モデル', '最小二乗法', '決定係数', 'R活用'],
+                    datasets: [{
+                        label: '理解度 (%)',
+                        data: [65, 72, 68, 82, 75, 70, 77, 73],
+                        backgroundColor: 'rgba(88, 80, 236, 0.2)',
+                        borderColor: 'rgba(88, 80, 236, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            TEACHER_STATE.updateUI();
+            initializeChart();
+        });
+    </script>
+</body>
+</html>

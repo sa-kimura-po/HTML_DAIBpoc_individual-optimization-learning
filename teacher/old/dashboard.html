@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教員ダッシュボード - データサイエンス基礎第7回</title>
+    <link rel="stylesheet" href="../common/daib-style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="daib-container">
+        <div class="daib-main">
+            <!-- 左サイドバー -->
+            <div class="daib-sidebar">
+                <!-- DAIBヘッダー -->
+                <div class="daib-sidebar-header">
+                    <div class="daib-header">
+                        <a href="dashboard.html">DAIB 教員</a>
+                    </div>
+                </div>
+
+                <!-- ナビゲーション -->
+                <div class="daib-nav-section" style="flex: 1; display: flex; flex-direction: column;">
+                    <div class="daib-nav-content" style="display: block; max-height: none; padding: 8px 16px 16px 16px; background: var(--daib-sidebar); flex: 1;">
+                        <a href="dashboard.html" class="nav-item active">
+                            <i class="fas fa-chart-line"></i>
+                            ダッシュボード
+                        </a>
+                        <a href="keywords.html" class="nav-item">
+                            <i class="fas fa-tags"></i>
+                            キーワード管理
+                        </a>
+                        <a href="themes.html" class="nav-item">
+                            <i class="fas fa-brain"></i>
+                            テーマ設定
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- メインコンテンツエリア -->
+            <div class="daib-content">
+                <!-- コンテンツヘッダー -->
+                <div class="daib-content-header">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <h1 class="daib-content-title">教員ダッシュボード</h1>
+                        <div>
+                            <label style="font-size: 12px; color: #666; margin-right: 8px;">講義選択:</label>
+                            <select class="daib-input" style="width: 200px; font-size: 14px;">
+                                <option>第7回: データサイエンス基礎</option>
+                                <option>第6回: 統計基礎</option>
+                                <option>第8回: 機械学習入門</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="daib-content-actions">
+                        <button onclick="generateReport()" class="daib-btn daib-btn-primary">
+                            <i class="fas fa-download"></i>
+                            レポート生成
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 学習コンテンツ -->
+                <div class="daib-learning-content">
+                    <!-- タブナビゲーション -->
+                    <div class="content-card" style="padding: 0; margin-bottom: 24px;">
+                        <div style="display: flex; border-bottom: 1px solid var(--daib-border);">
+                            <button class="tab-button active" data-tab="overview" style="flex: 1; padding: 16px; border: none; background: none; border-bottom: 3px solid var(--daib-primary); color: var(--daib-primary); font-weight: 600;">
+                                <i class="fas fa-chart-line" style="margin-right: 8px;"></i>
+                                概要
+                            </button>
+                            <button class="tab-button" data-tab="understanding" style="flex: 1; padding: 16px; border: none; background: none; border-bottom: 3px solid transparent; color: var(--daib-text-light);">
+                                <i class="fas fa-search" style="margin-right: 8px;"></i>
+                                キーワード理解度分析
+                            </button>
+                            <button class="tab-button" data-tab="students" style="flex: 1; padding: 16px; border: none; background: none; border-bottom: 3px solid transparent; color: var(--daib-text-light);">
+                                <i class="fas fa-users" style="margin-right: 8px;"></i>
+                                学生管理
+                            </button>
+                            <button class="tab-button" data-tab="lectures" style="flex: 1; padding: 16px; border: none; background: none; border-bottom: 3px solid transparent; color: var(--daib-text-light);">
+                                <i class="fas fa-brain" style="margin-right: 8px;"></i>
+                                第7回講義分析
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 概要タブ -->
+                    <div id="overview-tab" class="tab-content active">
+                        <!-- AI総合評価 -->
+                        <div class="content-card" style="background: linear-gradient(135deg, #f0f9f5, #e6f3ff); border: 1px solid var(--daib-primary); margin-bottom: 24px;">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <div style="width: 60px; height: 60px; background: var(--daib-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-robot" style="color: white; font-size: 24px;"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0 0 8px 0; color: var(--daib-primary); font-weight: 600;">AI総合評価</h3>
+                                    <p style="margin: 0; font-size: 16px; line-height: 1.5; color: var(--daib-text);">
+                                        第7回の学習状況は<strong>良好</strong>です。キーワード平均理解度73.2%と順調な進捗を示しています。
+                                        特に「回帰分析の目的」「決定係数の解釈」の理解度が高く、学生の関心が高い分野と評価されます。
+                                        一方で「2×2分割表の指標」については23名の学生が理解に課題を抱えており、次回授業での重点的な復習をお勧めします。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- KPI カード -->
+                        <div class="stats-grid" style="margin-bottom: 24px;">
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <p class="stat-card-title">第7回受講者数</p>
+                                    <i class="fas fa-users stat-card-icon"></i>
+                                </div>
+                                <p class="stat-card-value" id="total-students">2,200</p>
+                                <p style="font-size: 14px; color: var(--daib-success);">100% 出席率</p>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <p class="stat-card-title">キーワード平均理解度</p>
+                                    <i class="fas fa-chart-line stat-card-icon"></i>
+                                </div>
+                                <p class="stat-card-value" id="avg-understanding">73.2%</p>
+                                <p style="font-size: 14px; color: var(--daib-success);">第6回比 +3.1%</p>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <p class="stat-card-title">アンケート提出率</p>
+                                    <i class="fas fa-clipboard-check stat-card-icon"></i>
+                                </div>
+                                <p class="stat-card-value" id="completion-rate">84%</p>
+                                <p style="font-size: 14px; color: var(--daib-error);">未提出 16%</p>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <p class="stat-card-title">理解度要注意学生</p>
+                                    <i class="fas fa-exclamation-triangle stat-card-icon"></i>
+                                </div>
+                                <p class="stat-card-value" id="attention-students" style="color: var(--daib-error);">352</p>
+                                <p style="font-size: 14px; color: var(--daib-success);">第6回比 -89名</p>
+                            </div>
+                        </div>
+
+                        <!-- グラフとテーブル -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                            <!-- 理解度推移 -->
+                            <div class="content-card">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                                    <h3 style="margin: 0; font-size: 18px; font-weight: 600;">第7回キーワード理解度推移</h3>
+                                    <button class="daib-btn daib-btn-secondary" style="font-size: 12px; padding: 8px 12px;">詳細</button>
+                                </div>
+                                <div style="height: 300px; position: relative;">
+                                    <canvas id="understandingChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- キーワード別理解度 -->
+                            <div class="content-card">
+                                <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">第7回: データサイエンス基礎 - キーワード別理解度</h3>
+                                <div id="keyword-understanding-list" style="max-height: 300px; overflow-y: auto;">
+                                    <!-- キーワード理解度がJSで挿入される -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 理解度分析タブ -->
+                    <div id="understanding-tab" class="tab-content" style="display: none;">
+                        <div class="content-card">
+                            <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">理解度ヒートマップ</h3>
+                            <div style="overflow-x: auto;">
+                                <div id="heatmap-container" style="min-width: 100%;">
+                                    <!-- ヒートマップがJSで生成される -->
+                                </div>
+                            </div>
+                            
+                            <!-- 凡例 -->
+                            <div style="margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 24px; font-size: 12px;">
+                                <span>理解度レベル:</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 16px; height: 16px; background: #dc2626; border-radius: 3px;"></div>
+                                    <span>低 (1-2)</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 16px; height: 16px; background: #f59e0b; border-radius: 3px;"></div>
+                                    <span>普通 (3)</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 16px; height: 16px; background: #10b981; border-radius: 3px;"></div>
+                                    <span>高 (4)</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 16px; height: 16px; background: #059669; border-radius: 3px;"></div>
+                                    <span>非常に高 (5)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 学生管理タブ -->
+                    <div id="students-tab" class="tab-content" style="display: none;">
+                        <div class="content-card">
+                            <p style="text-align: center; color: var(--daib-text-light); font-style: italic;">
+                                学生管理機能は別画面で提供されます。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 講義別分析タブ -->
+                    <div id="lectures-tab" class="tab-content" style="display: none;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                            <div class="content-card">
+                                <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">講義別統計</h3>
+                                <div id="lecture-stats" style="font-size: 16px; line-height: 1.6;">
+                                    <div style="padding: 12px; background: var(--daib-background); border-radius: 8px; margin-bottom: 12px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-weight: 600;">受講者数</span>
+                                            <span style="color: var(--daib-primary); font-weight: 700;">2,200名</span>
+                                        </div>
+                                    </div>
+                                    <div style="padding: 12px; background: var(--daib-background); border-radius: 8px; margin-bottom: 12px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-weight: 600;">アンケート回答率</span>
+                                            <span style="color: var(--daib-success); font-weight: 700;">84%</span>
+                                        </div>
+                                    </div>
+                                    <div style="padding: 12px; background: var(--daib-background); border-radius: 8px; margin-bottom: 12px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-weight: 600;">平均学習時間</span>
+                                            <span style="color: var(--daib-primary); font-weight: 700;">45分</span>
+                                        </div>
+                                    </div>
+                                    <div style="padding: 12px; background: var(--daib-background); border-radius: 8px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-weight: 600;">理解度向上率</span>
+                                            <span style="color: var(--daib-success); font-weight: 700;">+12.3%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="content-card">
+                                <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">改善提案</h3>
+                                <div style="font-size: 14px; line-height: 1.5;">
+                                    <div style="padding: 16px; background: rgba(220, 38, 38, 0.05); border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 8px; margin-bottom: 16px;">
+                                        <h4 style="font-weight: 600; color: var(--daib-error); margin: 0 0 8px 0;">2×2分割表の指標</h4>
+                                        <p style="margin: 0 0 8px 0; color: var(--daib-error);">理解度が低下しています（2.1/5.0）</p>
+                                        <ul style="margin: 0; padding-left: 16px; color: var(--daib-error);">
+                                            <li>基礎概念の復習時間を増やす</li>
+                                            <li>実習例題を追加する</li>
+                                            <li>視覚的な説明を充実させる</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div style="padding: 16px; background: rgba(5, 150, 105, 0.05); border: 1px solid rgba(5, 150, 105, 0.2); border-radius: 8px;">
+                                        <h4 style="font-weight: 600; color: var(--daib-success); margin: 0 0 8px 0;">決定係数の解釈</h4>
+                                        <p style="margin: 0 0 8px 0; color: var(--daib-success);">高い満足度を維持（4.6/5.0）</p>
+                                        <ul style="margin: 0; padding-left: 16px; color: var(--daib-success);">
+                                            <li>実習時間の延長を検討</li>
+                                            <li>高度な応用例を紹介</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../common/data.js"></script>
+    <script>
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTabs();
+            loadDashboardData();
+            createUnderstandingChart();
+        });
+
+        // タブ初期化
+        function initializeTabs() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabName = button.dataset.tab;
+                    
+                    // 全タブボタンから active スタイルを削除
+                    tabButtons.forEach(btn => {
+                        btn.style.borderBottom = '3px solid transparent';
+                        btn.style.color = 'var(--daib-text-light)';
+                    });
+                    
+                    // 全タブコンテンツを非表示
+                    tabContents.forEach(content => content.style.display = 'none');
+                    
+                    // クリックされたタブボタンをアクティブに
+                    button.style.borderBottom = '3px solid var(--daib-primary)';
+                    button.style.color = 'var(--daib-primary)';
+                    
+                    // 対応するタブコンテンツを表示
+                    document.getElementById(tabName + '-tab').style.display = 'block';
+                });
+            });
+        }
+
+        // ダッシュボードデータ読み込み
+        function loadDashboardData() {
+            // キーワード理解度リスト生成
+            const keywordList = document.getElementById('keyword-understanding-list');
+            const keywordData = [
+                { name: "2×2分割表の指標", understanding: 2.1 },
+                { name: "リスク差・リスク比・オッズ比", understanding: 3.4 },
+                { name: "混同行列とは", understanding: 3.8 },
+                { name: "回帰分析の目的", understanding: 4.2 },
+                { name: "単回帰モデルとは", understanding: 3.9 },
+                { name: "最小二乗法による回帰係数の推定", understanding: 3.6 },
+                { name: "決定係数の解釈", understanding: 4.6 },
+                { name: "Rを用いた回帰分析", understanding: 3.7 }
+            ];
+            
+            keywordData.forEach((keyword, index) => {
+                const item = document.createElement('div');
+                item.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 12px; margin-bottom: 8px; background: var(--daib-background); border-radius: 8px;';
+                item.innerHTML = `
+                    <div>
+                        <p style="margin: 0; font-weight: 600; color: var(--daib-text);">${keyword.name}</p>
+                        <p style="margin: 0; font-size: 12px; color: var(--daib-text-light);">第7回のキーワード</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 14px; font-weight: 600;">${keyword.understanding.toFixed(1)}</span>
+                        <div style="width: 80px; height: 8px; background: var(--daib-border); border-radius: 4px; overflow: hidden;">
+                            <div style="height: 100%; border-radius: 4px; width: ${(keyword.understanding / 5) * 100}%; background: ${getUnderstandingColor(keyword.understanding)};"></div>
+                        </div>
+                    </div>
+                `;
+                keywordList.appendChild(item);
+            });
+
+            // ヒートマップ生成
+            generateHeatmap();
+        }
+
+        // 理解度に応じた色を取得
+        function getUnderstandingColor(level) {
+            if (level >= 4.0) return 'var(--daib-success)';
+            if (level >= 3.5) return 'var(--daib-info)';
+            if (level >= 2.5) return 'var(--daib-warning)';
+            return 'var(--daib-error)';
+        }
+
+        // ヒートマップ生成
+        function generateHeatmap() {
+            const container = document.getElementById('heatmap-container');
+            
+            // 学部学科データ（2200名の分布）
+            const departments = [
+                '神学部', '文学部', '社会学部', '法学部', '経済学部', '商学部', 
+                '政策学部', '文化情報学部', '理工学部', '生命医科学部', 
+                'スポーツ健康科学部', '心理学部', 'グローバル・コミュニケーション学部', 'グローバル地域文化学部'
+            ];
+            
+            const keywords = [
+                "2×2分割表の指標", "リスク差・リスク比・オッズ比", "混同行列とは", "回帰分析の目的",
+                "単回帰モデルとは", "最小二乗法による回帰係数の推定", "決定係数の解釈", "Rを用いた回帰分析"
+            ];
+            
+            // ヘッダー行
+            const header = document.createElement('div');
+            header.style.cssText = 'display: grid; gap: 2px; margin-bottom: 8px; grid-template-columns: 120px ' + 'repeat(' + keywords.length + ', 140px);';
+            header.innerHTML = `
+                <div style="padding: 8px; font-size: 12px; font-weight: 600; color: var(--daib-text-light);">学部</div>
+                ${keywords.map(keyword => 
+                    `<div style="padding: 8px; font-size: 12px; font-weight: 600; color: var(--daib-text-light); text-align: center;">${keyword}</div>`
+                ).join('')}
+            `;
+            container.appendChild(header);
+
+            // データ行
+            departments.forEach(dept => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display: grid; gap: 2px; margin-bottom: 2px; grid-template-columns: 120px ' + 'repeat(' + keywords.length + ', 140px);';
+                
+                const values = keywords.map(() => (Math.random() * 4 + 1).toFixed(1));
+                row.innerHTML = `
+                    <div style="padding: 8px; font-size: 12px; font-weight: 500; color: var(--daib-text); display: flex; align-items: center; background: var(--daib-background);">${dept}</div>
+                    ${values.map(value => 
+                        `<div style="padding: 8px; text-align: center; font-size: 12px; font-weight: 600; ${getHeatmapCellStyle(value)}">${value}</div>`
+                    ).join('')}
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // ヒートマップセルのスタイルを取得
+        function getHeatmapCellStyle(value) {
+            const val = parseFloat(value);
+            if (val >= 4.0) return 'background: #059669; color: white;';
+            if (val >= 3.5) return 'background: #10b981; color: white;';
+            if (val >= 3.0) return 'background: #f59e0b; color: white;';
+            if (val >= 2.5) return 'background: #f97316; color: white;';
+            return 'background: #dc2626; color: white;';
+        }
+
+        // 理解度推移グラフ作成
+        function createUnderstandingChart() {
+            const ctx = document.getElementById('understandingChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['第1回', '第2回', '第3回', '第4回', '第5回', '第6回', '第7回'],
+                    datasets: [{
+                        label: 'キーワード平均理解度',
+                        data: [65, 68, 70, 69, 72, 71, 73.2],
+                        borderColor: '#663399',
+                        backgroundColor: 'rgba(102, 51, 153, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 60,
+                            max: 80
+                        }
+                    }
+                }
+            });
+        }
+
+        // レポート生成
+        function generateReport() {
+            alert('レポートを生成しています...\n（実装予定）');
+        }
+    </script>
+</body>
+</html>
