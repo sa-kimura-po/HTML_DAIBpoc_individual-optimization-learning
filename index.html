@@ -1,0 +1,123 @@
+<\!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAIB教育システム</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .menu-item {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 15px;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: block;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .menu-item h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.4em;
+        }
+        
+        .menu-item p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        
+        .teacher {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .student {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .auth {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DAIB教育システム</h1>
+        <p class="subtitle">個別最適化学習システム</p>
+        
+        <div class="menu-grid">
+            <a href="teacher/dashboard.html" class="menu-item teacher">
+                <h3>教員ダッシュボード</h3>
+                <p>学習データ分析・管理機能</p>
+            </a>
+            
+            <a href="student/dashboard.html" class="menu-item student">
+                <h3>学生ダッシュボード</h3>
+                <p>学習進捗・課題管理</p>
+            </a>
+            
+            <a href="common/auth.html" class="menu-item auth">
+                <h3>ログイン</h3>
+                <p>認証・アクセス管理</p>
+            </a>
+        </div>
+        
+        <div class="footer">
+            <p>HTML_DAIBv3 Individual Optimization Learning POC</p>
+        </div>
+    </div>
+</body>
+</html>
+EOF < /dev/null
