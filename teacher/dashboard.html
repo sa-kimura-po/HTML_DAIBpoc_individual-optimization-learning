@@ -2195,6 +2195,12 @@
                 [0.76, 0.89, 0.68, 0.83, 1.00]
             ];
             
+            // 既存のヒートマップがあれば削除
+            const existingHeatmap = container.querySelector('div[style*="display: inline-block"]');
+            if (existingHeatmap) {
+                existingHeatmap.remove();
+            }
+            
             // Canvasを削除してHTMLテーブルでヒートマップ作成
             const canvas = document.getElementById('correlationMatrix');
             canvas.style.display = 'none';
