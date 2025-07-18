@@ -10,7 +10,7 @@ HTML_individual_optimization_learning_poc_keyword_20250708/
 ├── README.md                    # 実行ガイド
 ├── PROJECT_STRUCTURE.md         # この文書
 ├── teacher/                     # 教員画面（Cさん担当）
-│   ├── dashboard.html           # 教員ダッシュボード
+│   ├── dashboard.html           # 教員ダッシュボード（5つのタブ、相関分析機能含む）
 │   ├── heatmap.html            # 学生管理（ヒートマップ）
 │   ├── keywords.html           # キーワード管理
 │   └── common/
@@ -39,7 +39,7 @@ HTML_individual_optimization_learning_poc_keyword_20250708/
 ### Cさん（教員画面担当）
 **作業フォルダ**: `teacher/` 配下
 **作成ファイル**:
-- `teacher/dashboard.html` - 教員ダッシュボード
+- `teacher/dashboard.html` - 教員ダッシュボード（5つのタブ、トレンドグラフ、相関分析機能）
 - `teacher/heatmap.html` - 学生管理（ヒートマップ）
 - `teacher/keywords.html` - キーワード管理
 - `teacher/common/teacher-nav.js` - 教員ナビゲーション
