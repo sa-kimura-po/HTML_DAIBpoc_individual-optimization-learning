@@ -1,0 +1,119 @@
+<!-- 他学生との比較分析セクション -->
+<div class="content-card" style="margin-bottom: 24px;">
+    <h2 style="margin-bottom: 16px; display: flex; align-items: center;">
+        <i class="fas fa-users" style="margin-right: 8px; color: var(--daib-primary);"></i>
+        他学生との比較分析
+        <span style="font-size: 12px; margin-left: 8px; padding: 4px 8px; background: #f0f9ff; color: #0369a1; border-radius: 12px; font-weight: normal;">
+            自己認識改善サポート
+        </span>
+    </h2>
+    <p style="font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.5;">
+        同じアンケート・問題を解いた他の学生（匿名）の結果と比較することで、自己評価の客観性を確認できます。
+    </p>
+    
+    <!-- 比較分析タブ -->
+    <div class="comparison-tabs" style="margin-bottom: 20px;">
+        <button class="comparison-tab active" onclick="showComparisonTab('survey')" data-tab="survey">
+            理解度アンケート比較
+        </button>
+        <button class="comparison-tab" onclick="showComparisonTab('problems')" data-tab="problems">
+            問題解答結果比較
+        </button>
+    </div>
+    
+    <!-- 理解度アンケート比較 -->
+    <div id="survey-comparison" class="comparison-content active">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <!-- キーワード別比較グラフ -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+                <h3 style="margin: 0 0 16px 0; font-size: 16px;">キーワード別理解度比較</h3>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="surveyComparisonChart"></canvas>
+                </div>
+                <div style="margin-top: 12px; font-size: 12px; color: #666;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 2px;"></div>
+                        <span>あなたの評価</span>
+                        <div style="width: 12px; height: 12px; background: #e5e7eb; border-radius: 2px; margin-left: 16px;"></div>
+                        <span>他学生の平均</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分布比較 -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+                <h3 style="margin: 0 0 16px 0; font-size: 16px;">理解度分布での位置</h3>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="distributionChart"></canvas>
+                </div>
+                <div style="margin-top: 12px; font-size: 12px; color: #666;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 2px;"></div>
+                        <span>あなたの位置</span>
+                        <div style="width: 12px; height: 12px; background: #94a3b8; border-radius: 2px; margin-left: 16px;"></div>
+                        <span>他学生の分布</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 洞察とアドバイス -->
+        <div style="margin-top: 20px; padding: 16px; background: linear-gradient(135deg, #f0f9f5, #e6f3ff); border: 1px solid #10b981; border-radius: 8px;">
+            <h4 style="margin: 0 0 8px 0; color: #047857; display: flex; align-items: center;">
+                <i class="fas fa-lightbulb" style="margin-right: 8px;"></i>
+                客観的な気づき
+            </h4>
+            <div id="survey-insights" style="font-size: 14px; color: #047857; line-height: 1.5;">
+                <!-- JavaScriptで動的に生成 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 問題解答結果比較 -->
+    <div id="problems-comparison" class="comparison-content" style="display: none;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <!-- 正答率比較 -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+                <h3 style="margin: 0 0 16px 0; font-size: 16px;">問題別正答率比較</h3>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="problemsComparisonChart"></canvas>
+                </div>
+                <div style="margin-top: 12px; font-size: 12px; color: #666;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 12px; height: 12px; background: #059669; border-radius: 2px;"></div>
+                        <span>あなたの正答率</span>
+                        <div style="width: 12px; height: 12px; background: #e5e7eb; border-radius: 2px; margin-left: 16px;"></div>
+                        <span>他学生の平均正答率</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 解答時間比較 -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+                <h3 style="margin: 0 0 16px 0; font-size: 16px;">解答時間比較</h3>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="timeComparisonChart"></canvas>
+                </div>
+                <div style="margin-top: 12px; font-size: 12px; color: #666;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 12px; height: 12px; background: #8b5cf6; border-radius: 2px;"></div>
+                        <span>あなたの時間</span>
+                        <div style="width: 12px; height: 12px; background: #e5e7eb; border-radius: 2px; margin-left: 16px;"></div>
+                        <span>他学生の平均時間</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 洞察とアドバイス -->
+        <div style="margin-top: 20px; padding: 16px; background: linear-gradient(135deg, #fef3c7, #fef7cd); border: 1px solid #f59e0b; border-radius: 8px;">
+            <h4 style="margin: 0 0 8px 0; color: #d97706; display: flex; align-items: center;">
+                <i class="fas fa-chart-line" style="margin-right: 8px;"></i>
+                パフォーマンス分析
+            </h4>
+            <div id="problems-insights" style="font-size: 14px; color: #d97706; line-height: 1.5;">
+                <!-- JavaScriptで動的に生成 -->
+            </div>
+        </div>
+    </div>
+</div>

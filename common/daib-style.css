@@ -827,3 +827,40 @@ body {
 .justify-between { justify-content: space-between; }
 .gap-2 { gap: 16px; }
 .gap-3 { gap: 24px; }
+
+/* 比較分析セクション */
+.comparison-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--daib-border);
+}
+
+.comparison-tab {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--daib-text-light);
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.comparison-tab:hover {
+  color: var(--daib-primary);
+  background: rgba(102, 51, 153, 0.05);
+}
+
+.comparison-tab.active {
+  color: var(--daib-primary);
+  border-bottom-color: var(--daib-primary);
+  background: rgba(102, 51, 153, 0.05);
+}
+
+.comparison-content {
+  display: none;
+}
+
+.comparison-content.active {
+  display: block;
+}

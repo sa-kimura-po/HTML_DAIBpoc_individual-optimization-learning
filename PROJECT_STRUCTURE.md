@@ -17,10 +17,11 @@ HTML_individual_optimization_learning_poc_keyword_20250708/
 │       ├── teacher-nav.js      # 教員画面共通ナビゲーション
 │       └── teacher-style.css   # 教員画面スタイル
 ├── student/                     # 学生画面（Dさん担当）
-│   ├── dashboard.html           # 学生ダッシュボード
+│   ├── dashboard.html           # 学生ダッシュボード（他学生比較分析機能含む）
 │   ├── survey.html             # 理解度アンケート
 │   ├── problems.html           # 問題画面
 │   ├── results.html            # 採点結果画面
+│   └── comparison-analysis.html # 比較分析コンポーネント（新規追加）
 │   └── common/
 │       ├── student-nav.js      # 学生画面共通ナビゲーション
 │       └── student-style.css   # 学生画面スタイル
@@ -39,21 +40,32 @@ HTML_individual_optimization_learning_poc_keyword_20250708/
 ### Cさん（教員画面担当）
 **作業フォルダ**: `teacher/` 配下
 **作成ファイル**:
-- `teacher/dashboard.html` - 教員ダッシュボード（5つのタブ、トレンドグラフ、相関分析機能）
+- `teacher/dashboard.html` - 教員ダッシュボード（5つのタブ、トレンドグラフ、相関分析機能、個別問題生成機能）
 - `teacher/heatmap.html` - 学生管理（ヒートマップ）
 - `teacher/keywords.html` - キーワード管理
-- `teacher/common/teacher-nav.js` - 教員ナビゲーション
+- `teacher/common/teacher-nav.js` - 教員ナビゲーション  
 - `teacher/common/teacher-style.css` - 教員スタイル
+
+**🆕 最新更新内容（2025年7月25日）**:
+- ✅ **個別問題生成機能**: AI問題管理・教員独自問題作成・CSV一括管理・難易度設定を追加
+- ✅ **レスポンシブデザイン**: 全タブの画面幅対応を完了（ヒートマップ、学生管理テーブル、第7回講義分析）
+- ✅ **Chart.js最適化**: 重複描画防止・メモリリーク修正・固定データ化を実装
 
 ### Dさん（学生画面担当）
 **作業フォルダ**: `student/` 配下
 **作成ファイル**:
-- `student/dashboard.html` - 学生ダッシュボード
+- `student/dashboard.html` - 学生ダッシュボード（他学生比較分析機能含む）
 - `student/survey.html` - 理解度アンケート
 - `student/problems.html` - 問題画面（穴埋め・選択・計算）
 - `student/results.html` - 採点結果画面
+- `student/comparison-analysis.html` - 比較分析コンポーネント（新規追加）  
 - `student/common/student-nav.js` - 学生ナビゲーション
 - `student/common/student-style.css` - 学生スタイル
+
+**🆕 最新更新内容（2025年7月25日）**:
+- ✅ **他学生との比較分析機能**: アンケート・問題結果の匿名比較可視化を追加
+- ✅ **Chart.js統合**: 理解度比較・分布分析・正答率比較・解答時間比較グラフを実装
+- ✅ **客観的学習支援**: 自己評価の客観性向上と学習洞察提供機能を追加
 
 ## 🔄 データ連携仕様
 

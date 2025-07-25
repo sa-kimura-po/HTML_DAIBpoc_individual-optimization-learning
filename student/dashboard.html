@@ -385,6 +385,126 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- 他学生との比較分析セクション -->
+                        <div class="content-card" style="margin-bottom: 24px;">
+                            <h2 style="margin-bottom: 16px; display: flex; align-items: center;">
+                                <i class="fas fa-users" style="margin-right: 8px; color: var(--daib-primary);"></i>
+                                他学生との比較分析
+                                <span style="font-size: 12px; margin-left: 8px; padding: 4px 8px; background: #f0f9ff; color: #0369a1; border-radius: 12px; font-weight: normal;">
+                                    自己認識改善サポート
+                                </span>
+                            </h2>
+                            <p style="font-size: 14px; color: #666; margin-bottom: 20px; line-height: 1.5;">
+                                同じアンケート・問題を解いた他の学生（匿名）の結果と比較することで、自己評価の客観性を確認できます。
+                            </p>
+                            
+                            <!-- 比較分析タブ -->
+                            <div class="comparison-tabs" style="margin-bottom: 20px;">
+                                <button class="comparison-tab active" onclick="showComparisonTab('survey')" data-tab="survey">
+                                    理解度アンケート比較
+                                </button>
+                                <button class="comparison-tab" onclick="showComparisonTab('problems')" data-tab="problems">
+                                    問題解答結果比較
+                                </button>
+                            </div>
+                            
+                            <!-- 理解度アンケート比較 -->
+                            <div id="survey-comparison" class="comparison-content active">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                                    <!-- キーワード別比較グラフ -->
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+                                        <h3 style="margin: 0 0 16px 0; font-size: 16px;">キーワード別理解度比較</h3>
+                                        <div style="height: 300px; position: relative;">
+                                            <canvas id="surveyComparisonChart"></canvas>
+                                        </div>
+                                        <div style="margin-top: 12px; font-size: 12px; color: #666;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 2px;"></div>
+                                                <span>あなたの評価</span>
+                                                <div style="width: 12px; height: 12px; background: #e5e7eb; border-radius: 2px; margin-left: 16px;"></div>
+                                                <span>他学生の平均</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 分布比較 -->
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+                                        <h3 style="margin: 0 0 16px 0; font-size: 16px;">理解度分布での位置</h3>
+                                        <div style="height: 300px; position: relative;">
+                                            <canvas id="distributionChart"></canvas>
+                                        </div>
+                                        <div style="margin-top: 12px; font-size: 12px; color: #666;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 2px;"></div>
+                                                <span>あなたの位置</span>
+                                                <div style="width: 12px; height: 12px; background: #94a3b8; border-radius: 2px; margin-left: 16px;"></div>
+                                                <span>他学生の分布</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 洞察とアドバイス -->
+                                <div style="margin-top: 20px; padding: 16px; background: linear-gradient(135deg, #f0f9f5, #e6f3ff); border: 1px solid #10b981; border-radius: 8px;">
+                                    <h4 style="margin: 0 0 8px 0; color: #047857; display: flex; align-items: center;">
+                                        <i class="fas fa-lightbulb" style="margin-right: 8px;"></i>
+                                        客観的な気づき
+                                    </h4>
+                                    <div id="survey-insights" style="font-size: 14px; color: #047857; line-height: 1.5;">
+                                        <!-- JavaScriptで動的に生成 -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 問題解答結果比較 -->
+                            <div id="problems-comparison" class="comparison-content" style="display: none;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                                    <!-- 正答率比較 -->
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+                                        <h3 style="margin: 0 0 16px 0; font-size: 16px;">問題別正答率比較</h3>
+                                        <div style="height: 300px; position: relative;">
+                                            <canvas id="problemsComparisonChart"></canvas>
+                                        </div>
+                                        <div style="margin-top: 12px; font-size: 12px; color: #666;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 12px; height: 12px; background: #059669; border-radius: 2px;"></div>
+                                                <span>あなたの正答率</span>
+                                                <div style="width: 12px; height: 12px; background: #e5e7eb; border-radius: 2px; margin-left: 16px;"></div>
+                                                <span>他学生の平均正答率</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 解答時間比較 -->
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px;">
+                                        <h3 style="margin: 0 0 16px 0; font-size: 16px;">解答時間比較</h3>
+                                        <div style="height: 300px; position: relative;">
+                                            <canvas id="timeComparisonChart"></canvas>
+                                        </div>
+                                        <div style="margin-top: 12px; font-size: 12px; color: #666;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 12px; height: 12px; background: #8b5cf6; border-radius: 2px;"></div>
+                                                <span>あなたの時間</span>
+                                                <div style="width: 12px; height: 12px; background: #e5e7eb; border-radius: 2px; margin-left: 16px;"></div>
+                                                <span>他学生の平均時間</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 洞察とアドバイス -->
+                                <div style="margin-top: 20px; padding: 16px; background: linear-gradient(135deg, #fef3c7, #fef7cd); border: 1px solid #f59e0b; border-radius: 8px;">
+                                    <h4 style="margin: 0 0 8px 0; color: #d97706; display: flex; align-items: center;">
+                                        <i class="fas fa-chart-line" style="margin-right: 8px;"></i>
+                                        パフォーマンス分析
+                                    </h4>
+                                    <div id="problems-insights" style="font-size: 14px; color: #d97706; line-height: 1.5;">
+                                        <!-- JavaScriptで動的に生成 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- 過去の授業回データ閲覧セクション -->
                         <div class="content-card">
@@ -1873,6 +1993,218 @@
             
             return explanations[problem.id] || "この問題の解説は準備中です。";
         }
+        
+        // 比較分析機能
+        function showComparisonTab(tabType) {
+            // タブの切り替え
+            document.querySelectorAll('.comparison-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.comparison-content').forEach(content => {
+                content.classList.remove('active');
+                content.style.display = 'none';
+            });
+            
+            document.querySelector(`[data-tab="${tabType}"]`).classList.add('active');
+            document.getElementById(`${tabType}-comparison`).classList.add('active');
+            document.getElementById(`${tabType}-comparison`).style.display = 'block';
+            
+            // チャートの初期化
+            if (tabType === 'survey') {
+                initializeSurveyComparisonCharts();
+            } else if (tabType === 'problems') {
+                initializeProblemsComparisonCharts();
+            }
+        }
+        
+        function initializeSurveyComparisonCharts() {
+            // キーワード別理解度比較チャート
+            const surveyComparisonCtx = document.getElementById('surveyComparisonChart');
+            if (surveyComparisonCtx) {
+                new Chart(surveyComparisonCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['2×2分割表', 'リスク比', '混同行列', '回帰分析', '単回帰モデル', '最小二乗法', '決定係数', 'R統計'],
+                        datasets: [{
+                            label: 'あなたの評価',
+                            data: [3.5, 2.8, 3.2, 3.8, 3.0, 2.5, 3.7, 2.9],
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 4
+                        }, {
+                            label: '他学生の平均',
+                            data: [3.1, 3.2, 2.9, 3.3, 3.2, 2.8, 3.1, 3.0],
+                            backgroundColor: '#e5e7eb',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, max: 5 }
+                        }
+                    }
+                });
+            }
+            
+            // 理解度分布チャート
+            const distributionCtx = document.getElementById('distributionChart');
+            if (distributionCtx) {
+                new Chart(distributionCtx.getContext('2d'), {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: '他学生の分布',
+                            data: [
+                                {x: 1, y: 2.8}, {x: 2, y: 3.1}, {x: 3, y: 2.9}, {x: 4, y: 3.4},
+                                {x: 5, y: 3.2}, {x: 6, y: 2.7}, {x: 7, y: 3.5}, {x: 8, y: 3.0}
+                            ],
+                            backgroundColor: '#94a3b8',
+                            pointRadius: 8
+                        }, {
+                            label: 'あなたの位置',
+                            data: [
+                                {x: 1, y: 3.5}, {x: 2, y: 2.8}, {x: 3, y: 3.2}, {x: 4, y: 3.8},
+                                {x: 5, y: 3.0}, {x: 6, y: 2.5}, {x: 7, y: 3.7}, {x: 8, y: 2.9}
+                            ],
+                            backgroundColor: '#ef4444',
+                            pointRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: { 
+                                title: { display: true, text: 'キーワード' },
+                                min: 0, max: 9
+                            },
+                            y: { 
+                                title: { display: true, text: '理解度' },
+                                beginAtZero: true, max: 5 
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 洞察を生成
+            generateSurveyInsights();
+        }
+        
+        function initializeProblemsComparisonCharts() {
+            // 問題別正答率比較チャート
+            const problemsComparisonCtx = document.getElementById('problemsComparisonChart');
+            if (problemsComparisonCtx) {
+                new Chart(problemsComparisonCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['問題1', '問題2', '問題3', '問題4', '問題5'],
+                        datasets: [{
+                            label: 'あなたの正答率',
+                            data: [100, 80, 60, 100, 40],
+                            backgroundColor: '#059669',
+                            borderRadius: 4
+                        }, {
+                            label: '他学生の平均正答率',
+                            data: [75, 68, 82, 71, 63],
+                            backgroundColor: '#e5e7eb',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, max: 100 }
+                        }
+                    }
+                });
+            }
+            
+            // 解答時間比較チャート
+            const timeComparisonCtx = document.getElementById('timeComparisonChart');
+            if (timeComparisonCtx) {
+                new Chart(timeComparisonCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['問題1', '問題2', '問題3', '問題4', '問題5'],
+                        datasets: [{
+                            label: 'あなたの時間',
+                            data: [120, 180, 240, 90, 300],
+                            backgroundColor: '#8b5cf6',
+                            borderRadius: 4
+                        }, {
+                            label: '他学生の平均時間',
+                            data: [150, 160, 200, 140, 220],
+                            backgroundColor: '#e5e7eb',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { 
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '秒';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 洞察を生成
+            generateProblemsInsights();
+        }
+        
+        function generateSurveyInsights() {
+            const insights = document.getElementById('survey-insights');
+            if (insights) {
+                insights.innerHTML = `
+                    <p style="margin: 0 0 8px 0;">• <strong>強み</strong>：「回帰分析」と「決定係数」で他学生より高い自己評価をしています</p>
+                    <p style="margin: 0 0 8px 0;">• <strong>注意点</strong>：「最小二乗法」の自己評価が他学生より低めです。客観的な理解度確認をお勧めします</p>
+                    <p style="margin: 0;">• <strong>客観視</strong>：全体的に適切な自己評価ができていますが、一部で過小評価の傾向があります</p>
+                `;
+            }
+        }
+        
+        function generateProblemsInsights() {
+            const insights = document.getElementById('problems-insights');
+            if (insights) {
+                insights.innerHTML = `
+                    <p style="margin: 0 0 8px 0;">• <strong>正答率</strong>：問題1と4で優秀な成績。問題5は改善の余地があります</p>
+                    <p style="margin: 0 0 8px 0;">• <strong>解答時間</strong>：問題1で素早い解答。問題5で時間をかけすぎている可能性があります</p>
+                    <p style="margin: 0;">• <strong>学習効率</strong>：理解度の高い分野では素早く、難しい分野では時間をかける傾向が見られます</p>
+                `;
+            }
+        }
+        
+        // 初期化時に比較分析を設定
+        document.addEventListener('DOMContentLoaded', function() {
+            // 既存の初期化に加えて比較分析タブを初期化
+            setTimeout(() => {
+                showComparisonTab('survey');
+            }, 1000);
+        });
     </script>
 </body>
 </html>

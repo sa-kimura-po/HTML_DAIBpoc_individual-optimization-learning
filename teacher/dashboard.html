@@ -76,6 +76,10 @@
                                 <i class="fas fa-brain"></i>
                                 授業テーマ設定
                             </a>
+                            <a href="#" class="nav-item" onclick="TEACHER_STATE.setMode('review', 'problem-generation')">
+                                <i class="fas fa-edit"></i>
+                                個別問題生成
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -464,7 +468,7 @@
                                 </div>
 
                                 <!-- 推移グラフ群 -->
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
                                     <!-- アンケート提出率推移 -->
                                     <div class="content-card">
                                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
@@ -488,7 +492,7 @@
                                     </div>
                                 </div>
 
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
                                     <!-- 個別問題回答率推移 -->
                                     <div class="content-card">
                                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
@@ -561,8 +565,8 @@
                             <div id="understanding-tab" class="tab-content" style="display: none;">
                                 <div class="content-card">
                                     <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">理解度ヒートマップ</h3>
-                                    <div style="overflow-x: auto;">
-                                        <div id="heatmap-container" style="min-width: 100%;">
+                                    <div style="overflow-x: auto; width: 100%; max-width: 100%;">
+                                        <div id="heatmap-container" style="min-width: 100%; max-width: none;">
                                             <!-- ヒートマップがJSで生成される -->
                                         </div>
                                     </div>
@@ -594,15 +598,15 @@
                             <div id="students-tab" class="tab-content" style="display: none;">
                                 <div class="content-card">
                                     <h3 style="margin-bottom: 16px;">学生一覧</h3>
-                                    <div class="table-container">
-                                        <table style="width: 100%; border-collapse: collapse;">
+                                    <div class="table-container" style="overflow-x: auto; width: 100%; max-width: 100%;">
+                                        <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
                                             <thead>
                                                 <tr style="background: var(--daib-surface);">
-                                                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid var(--daib-border);">学生ID</th>
-                                                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid var(--daib-border);">氏名</th>
-                                                    <th style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">理解度</th>
-                                                    <th style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">問題数</th>
-                                                    <th style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border);">状態</th>
+                                                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid var(--daib-border); width: 15%;">学生ID</th>
+                                                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid var(--daib-border); width: 30%;">氏名</th>
+                                                    <th style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border); width: 20%;">理解度</th>
+                                                    <th style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border); width: 15%;">問題数</th>
+                                                    <th style="padding: 12px; text-align: center; border-bottom: 1px solid var(--daib-border); width: 20%;">状態</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -641,7 +645,7 @@
 
                             <!-- 講義別分析タブ -->
                             <div id="lectures-tab" class="tab-content" style="display: none;">
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
                                     <div class="content-card">
                                         <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">講義別統計</h3>
                                         <div id="lecture-stats" style="font-size: 16px; line-height: 1.6;">
@@ -743,7 +747,7 @@
                                 </div>
 
                                 <!-- 成績予測モデルと学生群分析 -->
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
                                     <!-- 成績予測モデルの精度検証 -->
                                     <div class="content-card">
                                         <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">予測モデル精度検証</h3>
@@ -773,7 +777,7 @@
                                         <i class="fas fa-microscope" style="margin-right: 8px;"></i>
                                         詳細分析結果
                                     </h3>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
                                         <!-- 主要相関関係 -->
                                         <div style="background: rgba(102, 51, 153, 0.05); border: 1px solid rgba(102, 51, 153, 0.2); border-radius: 8px; padding: 16px;">
                                             <h4 style="margin: 0 0 12px 0; font-weight: 600; color: var(--daib-primary);">主要相関関係</h4>
@@ -826,7 +830,7 @@
                                         <i class="fas fa-lightbulb" style="margin-right: 8px;"></i>
                                         改善推奨
                                     </h3>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
                                         <!-- 短期的改善 -->
                                         <div style="background: rgba(5, 150, 105, 0.05); border: 1px solid rgba(5, 150, 105, 0.2); border-radius: 8px; padding: 16px;">
                                             <h4 style="margin: 0 0 12px 0; font-weight: 600; color: var(--daib-success);">短期的改善</h4>
@@ -1289,6 +1293,238 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- 個別問題生成 -->
+                    <div id="problem-generation-content" class="daib-content-section" style="display: none;">
+                        <div class="daib-learning-content">
+                            <!-- 説明 -->
+                            <div class="content-card" style="margin-bottom: 24px;">
+                                <h3 style="margin: 0 0 8px 0;">個別問題生成について</h3>
+                                <p style="margin: 0 0 12px 0; color: var(--daib-text-light);">
+                                    AIが作成した問題の管理や、教員独自の問題作成・編集ができます。問題の難易度設定も可能です。
+                                </p>
+                                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                                    <button onclick="showProblemSection('browse')" class="daib-btn daib-btn-primary">
+                                        <i class="fas fa-eye"></i>
+                                        問題閲覧・編集
+                                    </button>
+                                    <button onclick="showProblemSection('create')" class="daib-btn daib-btn-success">
+                                        <i class="fas fa-plus"></i>
+                                        新規問題作成
+                                    </button>
+                                    <button onclick="showProblemSection('csv')" class="daib-btn daib-btn-info">
+                                        <i class="fas fa-file-csv"></i>
+                                        CSV管理
+                                    </button>
+                                    <button onclick="showProblemSection('difficulty')" class="daib-btn daib-btn-warning">
+                                        <i class="fas fa-star"></i>
+                                        難易度設定
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 問題閲覧・編集セクション -->
+                            <div id="browse-section" class="problem-section">
+                                <div class="content-card">
+                                    <h3 style="margin: 0 0 16px 0;">AI生成問題の閲覧・編集</h3>
+                                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="fas fa-filter" style="color: var(--daib-text-light);"></i>
+                                            <select class="daib-input" onchange="filterProblems()">
+                                                <option value="all">全問題</option>
+                                                <option value="calculation">計算問題</option>
+                                                <option value="choice">選択問題</option>
+                                                <option value="text">記述問題</option>
+                                            </select>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="fas fa-search" style="color: var(--daib-text-light);"></i>
+                                            <input type="text" placeholder="問題内容で検索" class="daib-input" style="width: 250px;">
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="problems-list" style="max-height: 600px; overflow-y: auto;">
+                                        <!-- サンプル問題 -->
+                                        <div class="problem-item" style="border: 1px solid var(--daib-border); border-radius: 8px; padding: 16px; margin-bottom: 16px; background: var(--daib-surface);">
+                                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                                <div>
+                                                    <span style="padding: 4px 8px; background: #e6f3ff; color: #0369a1; border-radius: 12px; font-size: 12px; margin-right: 8px;">計算問題</span>
+                                                    <span style="padding: 4px 8px; background: #f0fdf4; color: #047857; border-radius: 12px; font-size: 12px;">難易度: 中</span>
+                                                </div>
+                                                <div style="display: flex; gap: 8px;">
+                                                    <button class="daib-btn daib-btn-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="editProblem(1)">
+                                                        <i class="fas fa-edit"></i> 編集
+                                                    </button>
+                                                    <button class="daib-btn daib-btn-danger" style="padding: 4px 8px; font-size: 12px;" onclick="deleteProblem(1)">
+                                                        <i class="fas fa-trash"></i> 削除
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div style="margin-bottom: 12px;">
+                                                <h4 style="margin: 0 0 8px 0; font-size: 16px;">問題文</h4>
+                                                <p style="margin: 0; line-height: 1.5;">2×2分割表において、感度が0.8、特異度が0.9の場合、陽性的中率を求めなさい。ただし、有病率は0.1とする。</p>
+                                            </div>
+                                            <div style="margin-bottom: 12px;">
+                                                <h4 style="margin: 0 0 8px 0; font-size: 16px;">解答</h4>
+                                                <p style="margin: 0; color: var(--daib-success);">0.47 (または47%)</p>
+                                            </div>
+                                            <div>
+                                                <h4 style="margin: 0 0 8px 0; font-size: 16px;">解説</h4>
+                                                <p style="margin: 0; font-size: 14px; color: var(--daib-text-light);">陽性的中率 = (感度×有病率) / (感度×有病率 + (1-特異度)×(1-有病率))</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 新規問題作成セクション -->
+                            <div id="create-section" class="problem-section" style="display: none;">
+                                <div class="content-card">
+                                    <h3 style="margin: 0 0 16px 0;">新規問題作成</h3>
+                                    <form id="new-problem-form">
+                                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px;">
+                                            <div>
+                                                <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">問題タイプ</label>
+                                                <select class="daib-input" name="problemType" onchange="updateProblemForm()">
+                                                    <option value="calculation">計算問題</option>
+                                                    <option value="choice">選択問題</option>
+                                                    <option value="text">記述問題</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">難易度</label>
+                                                <select class="daib-input" name="difficulty">
+                                                    <option value="easy">低</option>
+                                                    <option value="medium">中</option>
+                                                    <option value="hard">高</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div style="margin-bottom: 16px;">
+                                            <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">問題文</label>
+                                            <textarea class="daib-input" name="question" style="min-height: 120px;" placeholder="問題文を入力してください"></textarea>
+                                        </div>
+                                        <div id="answer-section" style="margin-bottom: 16px;">
+                                            <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">解答</label>
+                                            <input type="text" class="daib-input" name="answer" placeholder="正解を入力してください">
+                                        </div>
+                                        <div style="margin-bottom: 16px;">
+                                            <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">解説</label>
+                                            <textarea class="daib-input" name="explanation" style="min-height: 80px;" placeholder="解説を入力してください"></textarea>
+                                        </div>
+                                        <div style="display: flex; gap: 12px;">
+                                            <button type="button" onclick="saveProblem()" class="daib-btn daib-btn-primary">
+                                                <i class="fas fa-save"></i> 保存
+                                            </button>
+                                            <button type="button" onclick="previewProblem()" class="daib-btn daib-btn-secondary">
+                                                <i class="fas fa-eye"></i> プレビュー
+                                            </button>
+                                            <button type="button" onclick="clearForm()" class="daib-btn daib-btn-danger">
+                                                <i class="fas fa-times"></i> クリア
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- CSV管理セクション -->
+                            <div id="csv-section" class="problem-section" style="display: none;">
+                                <div class="content-card" style="margin-bottom: 24px;">
+                                    <h3 style="margin: 0 0 16px 0;">CSV一括管理</h3>
+                                    <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                                        <button onclick="exportCSV()" class="daib-btn daib-btn-primary">
+                                            <i class="fas fa-download"></i> CSVエクスポート
+                                        </button>
+                                        <div style="position: relative;">
+                                            <input type="file" id="csv-file-input" accept=".csv" style="display: none;" onchange="importCSV()">
+                                            <button onclick="document.getElementById('csv-file-input').click()" class="daib-btn daib-btn-success">
+                                                <i class="fas fa-upload"></i> CSVインポート
+                                            </button>
+                                        </div>
+                                        <button onclick="downloadTemplate()" class="daib-btn daib-btn-info">
+                                            <i class="fas fa-file-download"></i> テンプレートDL
+                                        </button>
+                                    </div>
+                                    <div style="padding: 12px; background: #f0f9ff; border: 1px solid #0284c7; border-radius: 6px; font-size: 14px;">
+                                        <h4 style="margin: 0 0 8px 0; color: #0284c7;">CSV形式について</h4>
+                                        <p style="margin: 0; color: #0284c7;">列順序: 問題タイプ, 問題文, 解答, 解説, 難易度</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="content-card">
+                                    <h3 style="margin: 0 0 16px 0;">CSV一括アップロード</h3>
+                                    <div style="border: 2px dashed var(--daib-border); border-radius: 8px; padding: 32px; text-align: center; margin-bottom: 20px;">
+                                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--daib-text-light); margin-bottom: 16px;"></i>
+                                        <p style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">CSVファイルをドラッグ&ドロップ</p>
+                                        <p style="margin: 0; color: var(--daib-text-light);">または</p>
+                                        <button onclick="document.getElementById('bulk-csv-input').click()" class="daib-btn daib-btn-primary" style="margin-top: 12px;">
+                                            ファイルを選択
+                                        </button>
+                                        <input type="file" id="bulk-csv-input" accept=".csv" style="display: none;" onchange="handleBulkCSV()">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 難易度設定セクション -->
+                            <div id="difficulty-section" class="problem-section" style="display: none;">
+                                <div class="content-card" style="margin-bottom: 24px;">
+                                    <h3 style="margin: 0 0 16px 0;">難易度設定</h3>
+                                    <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                                        <button onclick="showDifficultyMode('individual')" class="daib-btn daib-btn-primary">
+                                            <i class="fas fa-edit"></i> 個別設定
+                                        </button>
+                                        <button onclick="showDifficultyMode('bulk')" class="daib-btn daib-btn-success">
+                                            <i class="fas fa-file-csv"></i> CSV一括設定
+                                        </button>
+                                        <button onclick="exportDifficultyCSV()" class="daib-btn daib-btn-info">
+                                            <i class="fas fa-download"></i> 難易度CSV出力
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- 個別難易度設定 -->
+                                    <div id="individual-difficulty" class="difficulty-mode">
+                                        <div class="content-card">
+                                            <h4 style="margin: 0 0 16px 0;">問題別難易度設定</h4>
+                                            <div style="border: 1px solid var(--daib-border); border-radius: 8px; padding: 16px; margin-bottom: 12px; background: var(--daib-surface);">
+                                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                    <div style="flex: 1;">
+                                                        <h5 style="margin: 0 0 4px 0;">問題1: 2×2分割表の感度計算</h5>
+                                                        <p style="margin: 0; font-size: 14px; color: var(--daib-text-light);">現在の難易度: 中</p>
+                                                    </div>
+                                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                                        <select class="daib-input" style="width: 120px;">
+                                                            <option value="easy">低</option>
+                                                            <option value="medium" selected>中</option>
+                                                            <option value="hard">高</option>
+                                                        </select>
+                                                        <button class="daib-btn daib-btn-primary" style="padding: 6px 12px; font-size: 12px;">
+                                                            更新
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- CSV一括難易度設定 -->
+                                    <div id="bulk-difficulty" class="difficulty-mode" style="display: none;">
+                                        <div class="content-card">
+                                            <h4 style="margin: 0 0 16px 0;">CSV一括難易度設定</h4>
+                                            <div style="border: 2px dashed var(--daib-border); border-radius: 8px; padding: 32px; text-align: center;">
+                                                <i class="fas fa-star" style="font-size: 48px; color: var(--daib-warning); margin-bottom: 16px;"></i>
+                                                <p style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">難易度設定CSVをアップロード</p>
+                                                <p style="margin: 0; color: var(--daib-text-light);">形式: 問題ID, 難易度</p>
+                                                <button onclick="document.getElementById('difficulty-csv-input').click()" class="daib-btn daib-btn-warning" style="margin-top: 12px;">
+                                                    ファイルを選択
+                                                </button>
+                                                <input type="file" id="difficulty-csv-input" accept=".csv" style="display: none;" onchange="handleDifficultyCSV()">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1300,7 +1536,7 @@
         const TEACHER_STATE = {
             currentMode: 'review', // 'daib' or 'review'
             currentDAIBFunction: 'upload', // 'upload', 'keywords', 'problems', 'search', 'chat'
-            currentReviewFunction: 'dashboard', // 'dashboard', 'keyword-management', 'theme-setting'
+            currentReviewFunction: 'dashboard', // 'dashboard', 'keyword-management', 'theme-setting', 'problem-generation'
             currentSubject: 'data-science',
             currentWeek: 7,
             currentChatType: 'general', // 'general', 'data-science', 'data-overview'
@@ -1804,6 +2040,112 @@
             alert('テーマフィルター機能を実装予定');
         }
 
+        // 個別問題生成機能
+        function showProblemSection(section) {
+            // 全セクションを非表示
+            document.querySelectorAll('.problem-section').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // 選択されたセクションを表示
+            document.getElementById(section + '-section').style.display = 'block';
+        }
+
+        function editProblem(id) {
+            alert(`問題${id}の編集機能を実装予定`);
+        }
+
+        function deleteProblem(id) {
+            if (confirm(`問題${id}を削除しますか？`)) {
+                alert(`問題${id}を削除しました`);
+            }
+        }
+
+        function filterProblems() {
+            alert('問題フィルター機能を実装予定');
+        }
+
+        function updateProblemForm() {
+            const problemType = document.querySelector('[name="problemType"]').value;
+            const answerSection = document.getElementById('answer-section');
+            
+            if (problemType === 'choice') {
+                answerSection.innerHTML = `
+                    <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">選択肢</label>
+                    <div style="display: grid; gap: 8px;">
+                        <input type="text" class="daib-input" placeholder="A) 選択肢1" name="choice1">
+                        <input type="text" class="daib-input" placeholder="B) 選択肢2" name="choice2">
+                        <input type="text" class="daib-input" placeholder="C) 選択肢3" name="choice3">
+                        <input type="text" class="daib-input" placeholder="D) 選択肢4" name="choice4">
+                    </div>
+                    <label style="display: block; font-size: 12px; font-weight: 600; margin: 12px 0 4px 0;">正解</label>
+                    <select class="daib-input" name="correctAnswer">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                `;
+            } else {
+                answerSection.innerHTML = `
+                    <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">解答</label>
+                    <input type="text" class="daib-input" name="answer" placeholder="正解を入力してください">
+                `;
+            }
+        }
+
+        function saveProblem() {
+            alert('問題保存機能を実装予定');
+        }
+
+        function previewProblem() {
+            alert('問題プレビュー機能を実装予定');
+        }
+
+        function clearForm() {
+            document.getElementById('new-problem-form').reset();
+            updateProblemForm();
+        }
+
+        function exportCSV() {
+            alert('CSVエクスポート機能を実装予定');
+        }
+
+        function importCSV() {
+            alert('CSVインポート機能を実装予定');
+        }
+
+        function downloadTemplate() {
+            alert('テンプレートダウンロード機能を実装予定');
+        }
+
+        function handleBulkCSV() {
+            alert('CSV一括アップロード機能を実装予定');
+        }
+
+        function confirmCSVImport() {
+            alert('CSVインポート確認機能を実装予定');
+        }
+
+        function cancelCSVImport() {
+            document.getElementById('csv-preview').style.display = 'none';
+        }
+
+        function showDifficultyMode(mode) {
+            document.querySelectorAll('.difficulty-mode').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.getElementById(mode + '-difficulty').style.display = 'block';
+        }
+
+        function exportDifficultyCSV() {
+            alert('難易度CSV出力機能を実装予定');
+        }
+
+        function handleDifficultyCSV() {
+            alert('難易度CSV処理機能を実装予定');
+        }
+
         // タブ初期化
         function initializeTabs() {
             const tabButtons = document.querySelectorAll('.tab-button');
@@ -1893,7 +2235,7 @@
             
             // ヘッダー行
             const header = document.createElement('div');
-            header.style.cssText = 'display: grid; gap: 2px; margin-bottom: 8px; grid-template-columns: 120px ' + 'repeat(' + keywords.length + ', 140px);';
+            header.style.cssText = 'display: grid; gap: 2px; margin-bottom: 8px; grid-template-columns: 120px ' + 'repeat(' + keywords.length + ', minmax(100px, 1fr));';
             header.innerHTML = `
                 <div style="padding: 8px; font-size: 12px; font-weight: 600; color: var(--daib-text-light);">学部</div>
                 ${keywords.map(keyword => 
@@ -1905,7 +2247,7 @@
             // データ行
             departments.forEach(dept => {
                 const row = document.createElement('div');
-                row.style.cssText = 'display: grid; gap: 2px; margin-bottom: 2px; grid-template-columns: 120px ' + 'repeat(' + keywords.length + ', 140px);';
+                row.style.cssText = 'display: grid; gap: 2px; margin-bottom: 2px; grid-template-columns: 120px ' + 'repeat(' + keywords.length + ', minmax(100px, 1fr));';
                 
                 const values = keywords.map(() => (Math.random() * 4 + 1).toFixed(1));
                 row.innerHTML = `
@@ -2068,14 +2410,33 @@
             });
         }
 
+        // グラフインスタンスを保存する変数
+        let predictionModelChart = null;
+        let correlationMatrixChart = null;
+        let finalCorrelationChartsCreated = false;
+
         // 最終相関分析タブのグラフ作成
         function createFinalCorrelationCharts() {
+            // 既に作成済みの場合は何もしない
+            if (finalCorrelationChartsCreated) {
+                return;
+            }
+            // 既存のグラフがあれば削除
+            if (predictionModelChart) {
+                predictionModelChart.destroy();
+                predictionModelChart = null;
+            }
+            if (correlationMatrixChart) {
+                correlationMatrixChart.destroy();
+                correlationMatrixChart = null;
+            }
+
             // 相関マトリックスヒートマップ作成
             createCorrelationHeatmap();
 
             // 成績予測モデルグラフ（実際成績 vs 予測成績）
             const predCtx = document.getElementById('predictionModel').getContext('2d');
-            new Chart(predCtx, {
+            predictionModelChart = new Chart(predCtx, {
                 type: 'scatter',
                 data: {
                     datasets: [{
@@ -2179,6 +2540,9 @@
                     }
                 }
             });
+            
+            // フラグを設定して重複作成を防ぐ
+            finalCorrelationChartsCreated = true;
         }
 
         // 相関マトリックスヒートマップ作成
@@ -2242,16 +2606,28 @@
 
         // 予測モデルデータ生成（実際成績 vs 予測成績）
         function generatePredictionData() {
+            // 固定データを使用して毎回同じ結果を表示
+            const baseData = [
+                {x: 85.2, y: 87.1}, {x: 76.8, y: 73.5}, {x: 92.1, y: 89.3}, {x: 68.4, y: 71.2}, {x: 81.7, y: 78.9},
+                {x: 74.9, y: 76.8}, {x: 88.3, y: 91.2}, {x: 65.1, y: 62.7}, {x: 79.6, y: 82.4}, {x: 71.2, y: 69.8},
+                {x: 86.7, y: 84.3}, {x: 73.5, y: 75.1}, {x: 90.8, y: 88.6}, {x: 67.9, y: 70.5}, {x: 83.4, y: 81.7},
+                {x: 77.1, y: 74.8}, {x: 89.5, y: 92.3}, {x: 66.3, y: 64.9}, {x: 80.7, y: 83.1}, {x: 72.8, y: 71.4},
+                {x: 85.9, y: 87.7}, {x: 75.6, y: 73.2}, {x: 91.4, y: 89.8}, {x: 69.7, y: 72.6}, {x: 82.3, y: 79.5},
+                {x: 74.2, y: 76.1}, {x: 87.8, y: 90.4}, {x: 65.8, y: 63.5}, {x: 78.9, y: 81.7}, {x: 70.5, y: 68.9},
+                {x: 86.1, y: 83.8}, {x: 73.9, y: 75.7}, {x: 90.2, y: 88.1}, {x: 68.6, y: 71.8}, {x: 83.7, y: 80.9},
+                {x: 76.4, y: 74.1}, {x: 88.9, y: 91.7}, {x: 66.7, y: 64.2}, {x: 81.2, y: 83.8}, {x: 72.1, y: 70.7},
+                {x: 85.6, y: 87.4}, {x: 75.3, y: 72.9}, {x: 91.7, y: 89.1}, {x: 69.4, y: 72.3}, {x: 82.8, y: 79.2},
+                {x: 74.5, y: 76.4}, {x: 87.2, y: 90.1}, {x: 65.4, y: 63.8}, {x: 79.3, y: 82.1}, {x: 71.8, y: 69.2}
+            ];
+            
+            // さらに多くのデータポイントを生成するため、基本パターンを繰り返し
             const data = [];
-            // よりリアルな予測精度を表現
-            for (let i = 0; i < 150; i++) {
-                const actual = Math.random() * 100;
-                // 予測精度を考慮した誤差を追加
-                const error = (Math.random() - 0.5) * 15; // ±7.5%の誤差
-                const predicted = actual + error;
-                data.push({ 
-                    x: Math.max(0, Math.min(100, predicted)), 
-                    y: Math.max(0, Math.min(100, actual)) 
+            for (let i = 0; i < 3; i++) {
+                baseData.forEach(point => {
+                    data.push({
+                        x: Math.max(0, Math.min(100, point.x + (i * 2 - 2))), // 少しのバリエーション
+                        y: Math.max(0, Math.min(100, point.y + (i * 2 - 2)))
+                    });
                 });
             }
             return data;
